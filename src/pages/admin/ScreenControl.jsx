@@ -1,4 +1,4 @@
-import { ExternalLink, LayoutGrid, ListOrdered, Radio, Trophy } from 'lucide-react';
+import { ExternalLink, Gamepad2, LayoutGrid, ListOrdered, Radio, Trophy } from 'lucide-react';
 import PageHeader from '../../components/admin/PageHeader';
 import Button from '../../components/ui/Button';
 import { useAppState } from '../../store/hooks';
@@ -8,12 +8,19 @@ const VIEWS = [
   { id: 'podium', label: 'Podium', icon: Trophy, text: 'Cérémonie : 3e, 2e puis le champion, avec confettis.' },
   { id: 'leaderboard', label: 'Classement', icon: ListOrdered, text: 'Toutes les équipes, mises à jour en direct.' },
   { id: 'teams', label: 'Équipes', icon: LayoutGrid, text: 'Une carte par équipe avec score et rang.' },
+  {
+    id: 'games',
+    label: 'Mini-jeux',
+    icon: Gamepad2,
+    text: 'La liste des mini-jeux disponibles, pour que les participants choisissent eux-mêmes.',
+  },
 ];
 
 const SHORTCUTS = [
   ['P', 'Podium'],
   ['L', 'Classement'],
   ['E', 'Équipes'],
+  ['G', 'Mini-jeux'],
   ['F', 'Plein écran'],
   ['R', 'Rejouer le podium'],
   ['Échap', 'Quitter le plein écran'],
@@ -41,7 +48,7 @@ export default function ScreenControl() {
         <h2 id="remote-title" className="mb-4 flex items-center gap-2 text-2xl font-extrabold uppercase">
           <Radio size={22} className="text-brand" /> Télécommande
         </h2>
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {VIEWS.map(({ id, label, icon: Icon, text }) => {
             const active = display.view === id;
             return (

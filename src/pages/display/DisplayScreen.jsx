@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { LayoutGrid, ListOrdered, Maximize, Minimize, Trophy } from 'lucide-react';
+import { Gamepad2, LayoutGrid, ListOrdered, Maximize, Minimize, Trophy } from 'lucide-react';
 import StageBackground from '../../components/display/StageBackground';
 import Podium from '../../components/display/Podium';
 import DisplayLeaderboard from '../../components/display/DisplayLeaderboard';
 import DisplayTeams from '../../components/display/DisplayTeams';
+import DisplayGames from '../../components/display/DisplayGames';
 import LiveEventOverlay from '../../components/display/LiveEventOverlay';
 import BrandMark from '../../components/ui/BrandMark';
 import { useAppState } from '../../store/hooks';
@@ -16,6 +17,7 @@ const VIEWS = [
   { id: 'podium', label: 'Podium', icon: Trophy, key: 'P' },
   { id: 'leaderboard', label: 'Classement', icon: ListOrdered, key: 'L' },
   { id: 'teams', label: 'Équipes', icon: LayoutGrid, key: 'E' },
+  { id: 'games', label: 'Mini-jeux', icon: Gamepad2, key: 'G' },
 ];
 
 /** Hides the cursor and controls after a few seconds without mouse movement. */
@@ -64,6 +66,7 @@ export default function DisplayScreen() {
     r: () => startPodiumCeremony(),
     l: () => setDisplayView('leaderboard'),
     e: () => setDisplayView('teams'),
+    g: () => setDisplayView('games'),
     f: toggleFullscreen,
   });
 
@@ -115,6 +118,7 @@ export default function DisplayScreen() {
             {view === 'podium' && <Podium runKey={display.podiumRun} />}
             {view === 'leaderboard' && <DisplayLeaderboard />}
             {view === 'teams' && <DisplayTeams />}
+            {view === 'games' && <DisplayGames />}
           </motion.div>
         </AnimatePresence>
       </main>
