@@ -1,6 +1,6 @@
 import { useSettings } from '../../store/hooks';
 
-export const DEFAULT_LOGO = '/brand/atast-club.png';
+export const DEFAULT_LOGO = `${import.meta.env.BASE_URL}brand/atast-club.png`;
 
 /** Event logo on a cream tile — the uploaded one from Paramètres, or the ATAST Club globe. */
 export default function BrandMark({ className = 'h-12 w-12', padding = 'p-1.5' }) {

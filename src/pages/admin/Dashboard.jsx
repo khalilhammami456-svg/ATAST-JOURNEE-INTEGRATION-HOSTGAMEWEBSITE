@@ -13,7 +13,7 @@ import { useAppState, useRankedTeams, useSettings, useTeamsById } from '../../st
 import { startPodiumCeremony, undoLastChange } from '../../store/actions';
 import { formatDelta, relativeTime } from '../../utils/format';
 
-function openDisplay(path = '/display') {
+function openDisplay(path = `${import.meta.env.BASE_URL}display`) {
   window.open(path, 'journee-integration-display');
 }
 
