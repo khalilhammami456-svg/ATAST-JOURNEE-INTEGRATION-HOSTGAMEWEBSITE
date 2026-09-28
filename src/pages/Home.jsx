@@ -57,9 +57,14 @@ export default function Home() {
         >
           <OrbitRings className="absolute -inset-x-[45%] -inset-y-[120%]" />
           <span
-            className="relative rounded-full bg-cream px-8 py-1 font-extrabold tracking-[0.15em] text-brand shadow-lift"
+            className="relative flex items-center gap-3 rounded-full bg-cream px-6 py-1 font-extrabold tracking-[0.15em] text-brand shadow-lift sm:px-8 sm:gap-4"
             style={{ fontSize: 'clamp(2rem, 6vw, 5rem)' }}
           >
+            <img
+              src="/brand/atast-emblem.png"
+              alt="ATAST"
+              className="h-[1.15em] w-[1.15em] shrink-0 object-contain"
+            />
             {year}
           </span>
         </motion.div>
