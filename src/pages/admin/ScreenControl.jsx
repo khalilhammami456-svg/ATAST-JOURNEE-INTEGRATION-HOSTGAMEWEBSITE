@@ -31,7 +31,7 @@ export default function ScreenControl() {
         title="Mode écran"
         description="Ouvrez l'écran public dans une nouvelle fenêtre, glissez-la sur le projecteur et passez-la en plein écran (touche F). Tout ce que vous modifiez ici s'y affiche instantanément."
         actions={
-          <Button size="lg" icon={ExternalLink} onClick={() => window.open('/display', 'journee-integration-display')}>
+          <Button size="lg" icon={ExternalLink} onClick={() => window.open(`${import.meta.env.BASE_URL}display`, 'journee-integration-display')}>
             Ouvrir l'écran public
           </Button>
         }
