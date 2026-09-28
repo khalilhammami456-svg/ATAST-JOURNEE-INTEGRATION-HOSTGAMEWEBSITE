@@ -1,0 +1,107 @@
+@import '@fontsource-variable/saira/standard.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* --brand* are overwritten at runtime from the "Couleur principale" setting */
+    --brand: 196 7 61;
+    --brand-deep: 140 4 43;
+    --brand-night: 60 2 20;
+
+    --surface: 248 243 236;
+    --surface-raised: 255 255 255;
+    --surface-sunken: 239 231 222;
+    --ink: 29 15 20;
+    --ink-soft: 92 74 80;
+    --ink-faint: 150 132 138;
+    --line: 226 214 204;
+    color-scheme: light;
+  }
+
+  .dark {
+    --surface: 20 10 14;
+    --surface-raised: 34 19 25;
+    --surface-sunken: 14 7 10;
+    --ink: 248 243 236;
+    --ink-soft: 200 184 190;
+    --ink-faint: 140 120 128;
+    --line: 60 40 48;
+    color-scheme: dark;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  body {
+    @apply bg-surface text-ink font-sans;
+  }
+
+  :focus-visible {
+    outline: 3px solid rgb(var(--brand));
+    outline-offset: 3px;
+    border-radius: 0.6rem;
+  }
+
+  .on-brand :focus-visible {
+    outline-color: #f8f3ec;
+  }
+
+  input[type='number']::-webkit-inner-spin-button {
+    opacity: 0.4;
+  }
+}
+
+@layer components {
+  .field {
+    @apply w-full rounded-xl border-2 border-line bg-surface-raised px-4 py-3 text-base font-medium text-ink
+      placeholder:text-ink-faint transition focus:border-brand focus:outline-none;
+  }
+  .field-error {
+    @apply border-brand bg-brand/5;
+  }
+  .label {
+    @apply mb-1.5 block text-sm font-bold uppercase tracking-wider text-ink-soft;
+  }
+  .card {
+    @apply rounded-xl2 border border-line bg-surface-raised shadow-card;
+  }
+  .display-title {
+    @apply font-extrabold uppercase leading-[0.9] tracking-tight;
+    font-stretch: 110%;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Disable every motion when the user turned animations off in Paramètres */
+.no-motion *,
+.no-motion *::before,
+.no-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgb(var(--line));
+  border-radius: 999px;
+}
