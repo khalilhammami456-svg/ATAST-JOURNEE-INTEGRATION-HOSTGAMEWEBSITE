@@ -26,7 +26,7 @@ export default function Home() {
 
   const openScreen = (view) => {
     if (view) setDisplayView(view);
-    window.open('/display', 'journee-integration-display');
+    window.open(`${import.meta.env.BASE_URL}display`, 'journee-integration-display');
   };
 
   return (
@@ -61,7 +61,7 @@ export default function Home() {
             style={{ fontSize: 'clamp(2rem, 6vw, 5rem)' }}
           >
             <img
-              src="/brand/atast-emblem.png"
+              src={`${import.meta.env.BASE_URL}brand/atast-emblem.png`}
               alt="ATAST"
               className="h-[1.15em] w-[1.15em] shrink-0 object-contain"
             />
