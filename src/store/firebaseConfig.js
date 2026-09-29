@@ -18,12 +18,12 @@
  * single-device, localStorage-only mode — nothing breaks in the meantime.
  */
 export const firebaseConfig = {
-  apiKey: 'REPLACE_ME',
-  authDomain: 'REPLACE_ME',
-  projectId: 'REPLACE_ME',
-  storageBucket: 'REPLACE_ME',
-  messagingSenderId: 'REPLACE_ME',
-  appId: 'REPLACE_ME',
+  apiKey: 'AIzaSyCYWUKchy0wfGu2sawK5TNagg6ZEJC1-xo',
+  authDomain: 'atast-d3725.firebaseapp.com',
+  projectId: 'atast-d3725',
+  storageBucket: 'atast-d3725.firebasestorage.app',
+  messagingSenderId: '447275082453',
+  appId: '1:447275082453:web:768db59615cab1258ff85c',
 };
 
 export const isFirebaseConfigured = Object.values(firebaseConfig).every(
