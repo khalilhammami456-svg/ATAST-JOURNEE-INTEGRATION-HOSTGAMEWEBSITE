@@ -20,6 +20,7 @@ import { useAppState } from '../../store/hooks';
 import { clearAllData, importData, loadDemoData, resetScores, updateSettings } from '../../store/actions';
 import { exportCsv, exportJson, parseBackup } from '../../utils/exporters';
 import { playSound } from '../../utils/sound';
+import { isFirebaseConfigured } from '../../store/firebaseConfig';
 
 const BRAND_PRESETS = ['#C4073D', '#1F6FE0', '#0B2A6B', '#F5921E', '#8B3DFF', '#12B886'];
 
@@ -128,7 +129,11 @@ export default function Settings() {
       <PageHeader
         eyebrow="Configuration"
         title="Paramètres"
-        description="Tout est enregistré automatiquement sur cet ordinateur."
+        description={
+          isFirebaseConfigured
+            ? 'Synchronisé automatiquement entre tous les appareils des animateurs.'
+            : 'Tout est enregistré automatiquement sur cet ordinateur.'
+        }
       />
 
       <div className="grid gap-6 xl:grid-cols-2">

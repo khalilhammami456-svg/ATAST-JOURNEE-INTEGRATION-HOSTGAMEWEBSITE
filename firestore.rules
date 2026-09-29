@@ -1,0 +1,23 @@
+rules_version = '2';
+
+// Paste this into Firebase Console > Firestore Database > Rules, then Publish.
+//
+// This matches the app's existing access model: there is no login on
+// /admin today, so anyone who opens the admin URL on this browser (or,
+// with sync on, this event's Firestore project) can already edit
+// everything. These rules just extend that same trust level across
+// devices instead of restricting it — they do not add or remove any
+// access control that wasn't already implicit in the app. If you want to
+// lock this down later (e.g. a shared host passcode), that's a separate
+// feature to ask for.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /events/{eventId} {
+      allow read, write: if true;
+
+      match /{collection}/{docId} {
+        allow read, write: if true;
+      }
+    }
+  }
+}

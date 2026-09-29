@@ -3,6 +3,7 @@ import PageHeader from '../../components/admin/PageHeader';
 import Button from '../../components/ui/Button';
 import { useAppState } from '../../store/hooks';
 import { setDisplayView, startPodiumCeremony } from '../../store/actions';
+import { isFirebaseConfigured } from '../../store/firebaseConfig';
 
 const VIEWS = [
   { id: 'podium', label: 'Podium', icon: Trophy, text: 'Cérémonie : 3e, 2e puis le champion, avec confettis.' },
@@ -103,8 +104,17 @@ export default function ScreenControl() {
             Bon à savoir
           </h2>
           <ul className="list-disc space-y-2 pl-5 text-ink-soft">
-            <li>L'écran public et l'admin doivent être ouverts dans le même navigateur, sur le même ordinateur.</li>
-            <li>Aucune connexion Internet n'est nécessaire : tout est enregistré sur cet ordinateur.</li>
+            {isFirebaseConfigured ? (
+              <>
+                <li>La synchronisation est activée : chaque animateur peut ouvrir l'admin sur son propre téléphone ou ordinateur, les scores se mettent à jour partout en direct.</li>
+                <li>Une connexion Internet est nécessaire sur chaque appareil pour envoyer et recevoir les changements.</li>
+              </>
+            ) : (
+              <>
+                <li>L'écran public et l'admin doivent être ouverts dans le même navigateur, sur le même ordinateur.</li>
+                <li>Aucune connexion Internet n'est nécessaire : tout est enregistré sur cet ordinateur.</li>
+              </>
+            )}
             <li>L'écran public n'affiche aucun bouton d'administration.</li>
             <li>Pensez à exporter une sauvegarde JSON dans Paramètres avant et après l'événement.</li>
           </ul>
