@@ -175,6 +175,23 @@ Le cahier des charges laisse la stack ouverte. Choix retenus pour un club de tai
 - **Frontend sans framework ni build** : quelques kilo-octets de JavaScript modulaire, compatible avec une CSP stricte.
 - **Score calculé à la demande** (stratégie 1 du document) ; `points_awarded` est conservé sur chaque participation et resynchronisé en transaction lors d'un changement de type.
 
+## Déploiement sur Render
+
+Le fichier `render.yaml` (à la racine du dépôt) décrit le service : Node 22, disque persistant monté sur `/var/data` (base SQLite + photos), contrôle de santé `/healthz`, HTTPS fourni par Render.
+
+> ⚠️ Un **disque persistant n'existe que sur les offres payantes** de Render (Starter, environ 7 $/mois + le disque). Sur l'offre gratuite le système de fichiers est effacé à chaque déploiement : toute la base serait perdue. Une seule instance : un disque ne se partage pas.
+
+1. Sur render.com : **New → Blueprint**, connecter le dépôt GitHub et choisir la branche à déployer (par exemple `main` après fusion). Render lit `render.yaml` et crée le service `atast-platform` avec son disque.
+2. Attendre la fin du premier déploiement. Le site est disponible sur `https://atast-platform.onrender.com` (adresse indiquée sur la page du service). Les tables de la base sont créées automatiquement au démarrage.
+3. Créer le premier administrateur : service → **Shell** :
+   ```bash
+   ADMIN_NAME="Bureau ATAST" ADMIN_EMAIL=bureau@atast.tn ADMIN_PHONE=+21673000000 ADMIN_PASSWORD='un-mot-de-passe-solide-2026' npm run create-admin
+   ```
+   (n'utilisez jamais `seed:demo` en production).
+4. Se connecter, ouvrir **Cotisations**, importer la liste Excel.
+5. Nom de domaine personnalisé (facultatif) : service → **Settings → Custom Domains**, puis définir la variable `APP_URL=https://votre-domaine`.
+6. **Sauvegardes** : activer et vérifier les instantanés du disque dans le tableau de bord Render, et lancer régulièrement `npm run backup` depuis le Shell (copies dans `/var/data/backups` si `BACKUP_DIR=/var/data/backups`). Télécharger une copie hors de Render de temps en temps.
+
 ## Production
 
 1. Placer l'application derrière un reverse proxy HTTPS (Nginx, Caddy…), `NODE_ENV=production` et `APP_URL=https://…`.

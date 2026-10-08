@@ -45,6 +45,16 @@ function createApp() {
     crossOriginEmbedderPolicy: false,
   }));
 
+  // Liveness probe for the hosting platform (no authentication, no data).
+  app.get('/healthz', (_req, res) => {
+    try {
+      require('./db/database').get().prepare('SELECT 1').get();
+      res.set('Cache-Control', 'no-store').type('text').send('ok');
+    } catch {
+      res.status(503).type('text').send('database unavailable');
+    }
+  });
+
   app.use(cookieParser());
   app.use(express.json({ limit: '100kb' }));
 

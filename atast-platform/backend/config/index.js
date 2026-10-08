@@ -22,7 +22,8 @@ const config = {
   isProduction: env === 'production',
   isTest: env === 'test',
   port: int('PORT', 3000),
-  appUrl: process.env.APP_URL || 'http://localhost:3000',
+  // RENDER_EXTERNAL_URL is provided automatically by Render (https://<service>.onrender.com)
+  appUrl: process.env.APP_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:3000',
 
   // Database (DATABASE_URL accepts a file path, or ":memory:" for tests)
   databaseUrl: process.env.DATABASE_URL || path.join(ROOT, 'database', 'atast.sqlite'),
@@ -56,7 +57,7 @@ const config = {
   supportedCurrencies: ['TND', 'EUR', 'USD'],
 };
 
-if (config.isProduction && !process.env.APP_URL) {
+if (config.isProduction && !process.env.APP_URL && !process.env.RENDER_EXTERNAL_URL) {
   // HTTPS is mandatory in production: fail loudly rather than run misconfigured.
   throw new Error('APP_URL must be set (https://...) in production');
 }

@@ -1,0 +1,33 @@
+# Render Blueprint for the ATAST club platform (atast-platform/).
+# SQLite lives on a persistent disk, which Render only offers on paid plans (a free instance loses
+# its files at every deploy). One instance only: a disk cannot be shared between instances.
+services:
+  - type: web
+    name: atast-platform
+    runtime: node
+    rootDir: atast-platform
+    plan: starter
+    region: frankfurt            # closest to Tunisia among Render's regions; change if you prefer
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 22.13.0
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: /var/data/atast.sqlite
+      - key: UPLOAD_DIR
+        value: /var/data/uploads
+      - key: CLUB_TIMEZONE
+        value: Africa/Tunis
+      - key: AUTO_ACCEPT_REQUIRE_PHONE
+        value: "true"
+      # APP_URL is optional on Render: RENDER_EXTERNAL_URL is used when it is not set.
+      # Set APP_URL yourself once you attach a custom domain (e.g. https://membres.atast.tn).
+    disk:
+      name: atast-data
+      mountPath: /var/data
+      sizeGB: 1
