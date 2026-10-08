@@ -1,0 +1,7 @@
+# Caddy obtains and renews the HTTPS certificate automatically (Let's Encrypt).
+__HOST__ {
+	# flush_interval -1: do not buffer, the live-sync stream (/api/sync) must reach browsers immediately
+	reverse_proxy 127.0.0.1:3000 {
+		flush_interval -1
+	}
+}

@@ -175,22 +175,9 @@ Le cahier des charges laisse la stack ouverte. Choix retenus pour un club de tai
 - **Frontend sans framework ni build** : quelques kilo-octets de JavaScript modulaire, compatible avec une CSP stricte.
 - **Score calculé à la demande** (stratégie 1 du document) ; `points_awarded` est conservé sur chaque participation et resynchronisé en transaction lors d'un changement de type.
 
-## Déploiement sur Render
+## Déploiement gratuit (machine virtuelle Oracle Cloud)
 
-Le fichier `render.yaml` (à la racine du dépôt) décrit le service : Node 22, disque persistant monté sur `/var/data` (base SQLite + photos), contrôle de santé `/healthz`, HTTPS fourni par Render.
-
-> ⚠️ Un **disque persistant n'existe que sur les offres payantes** de Render (Starter, environ 7 $/mois + le disque). Sur l'offre gratuite le système de fichiers est effacé à chaque déploiement : toute la base serait perdue. Une seule instance : un disque ne se partage pas.
-
-1. Sur render.com : **New → Blueprint**, connecter le dépôt GitHub et choisir la branche à déployer (par exemple `main` après fusion). Render lit `render.yaml` et crée le service `atast-platform` avec son disque.
-2. Attendre la fin du premier déploiement. Le site est disponible sur `https://atast-platform.onrender.com` (adresse indiquée sur la page du service). Les tables de la base sont créées automatiquement au démarrage.
-3. Créer le premier administrateur : service → **Shell** :
-   ```bash
-   ADMIN_NAME="Bureau ATAST" ADMIN_EMAIL=bureau@atast.tn ADMIN_PHONE=+21673000000 ADMIN_PASSWORD='un-mot-de-passe-solide-2026' npm run create-admin
-   ```
-   (n'utilisez jamais `seed:demo` en production).
-4. Se connecter, ouvrir **Cotisations**, importer la liste Excel.
-5. Nom de domaine personnalisé (facultatif) : service → **Settings → Custom Domains**, puis définir la variable `APP_URL=https://votre-domaine`.
-6. **Sauvegardes** : activer et vérifier les instantanés du disque dans le tableau de bord Render, et lancer régulièrement `npm run backup` depuis le Shell (copies dans `/var/data/backups` si `BACKUP_DIR=/var/data/backups`). Télécharger une copie hors de Render de temps en temps.
+La plateforme a besoin d'un serveur Node avec un **disque persistant** (base SQLite + photos). Netlify et l'offre gratuite de Render ne conviennent pas : leur système de fichiers est effacé. Le dossier `deploy/oracle/` contient un guide pas à pas (`README.md`) et un script d'installation (`setup.sh`) pour une machine virtuelle gratuite « Always Free » d'Oracle Cloud : Node 22, redémarrage automatique, HTTPS automatique, pare-feu, sauvegarde quotidienne, mise à jour en une commande. Il fonctionne aussi sur n'importe quel VPS Ubuntu/Debian.
 
 ## Production
 
