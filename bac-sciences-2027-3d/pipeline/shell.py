@@ -62,6 +62,17 @@ class Body:
         self.z = {k: gl.cd["avatar"].z_of(m, k) for k in ("neck", "shoulder", "chest", "waist", "hip", "crotch", "knee", "ankle")}
         self.height = m["height"]
         self.bvh = BVHTree.FromPolygons(self.co, [tuple(f) for f in self.faces])
+        from mathutils import kdtree
+        self.kd = kdtree.KDTree(len(self.co))
+        for i, c in enumerate(self.co):
+            self.kd.insert(c, i)
+        self.kd.balance()
+
+    def is_arm(self, p):
+        """True when the nearest avatar vertex is weighted mainly to an arm / forearm bone (torso side verts are not)."""
+        co, i, d = self.kd.find(p)
+        n = self.dom[i]
+        return n.endswith("Arm") or n.endswith("ForeArm")
 
     def arm_axis(self, side):
         a = ARMS[side]
@@ -100,6 +111,20 @@ def _cut(bm, co, no, keep_side):
     r = bmesh.ops.bisect_plane(bm, geom=geom, plane_co=co, plane_no=no, dist=1e-5, use_snap_center=False,
                                clear_inner=(keep_side > 0), clear_outer=(keep_side < 0))
     return r
+
+
+def _cut_arm(bm, body, co, no):
+    """Cut an arm with a plane but delete only the geometry that belongs to the arm (within 0.15 m of its axis),
+    so an infinite plane cannot slice the torso."""
+    geom = list(bm.verts) + list(bm.edges) + list(bm.faces)
+    bmesh.ops.bisect_plane(bm, geom=geom, plane_co=co, plane_no=no, dist=1e-5, use_snap_center=False)
+    doomed = []
+    for v in bm.verts:
+        if (v.co - co).dot(no) > 1e-5:
+            side_, s_, d_, t_, q_, ax_ = arm_params(body, v.co)
+            if d_ < 0.15 and t_ > 0.05 and body.is_arm(v.co):
+                doomed.append(v)
+    bmesh.ops.delete(bm, geom=doomed, context='VERTS')
 
 
 def extract(body, kind="hoodie", sleeve="long", neck_cut=None, hem_z=None, cuff_t=0.97, arm_cut_t=0.5, armhole_d=0.045,
@@ -141,15 +166,17 @@ def extract(body, kind="hoodie", sleeve="long", neck_cut=None, hem_z=None, cuff_
         if sleeve == "long":
             ax = (wr - el).normalized()
             p = el + (wr - el) * cuff_t
-            _cut(bm, p, ax, -1)
         elif sleeve == "short":
             ax = (el - sh).normalized()
             p = sh + (el - sh) * arm_cut_t
-            _cut(bm, p, ax, -1)
-        else:   # armhole only: cut across the arm root
-            ax = (el - sh).normalized()
-            p = sh + ax * armhole_d
-            _cut(bm, p, ax, -1)
+        else:   # armhole only: the whole arm is removed along its natural junction with the torso
+            continue
+        _cut_arm(bm, body, p, ax)
+    if sleeve == "armhole":
+        # remove the arm-owned geometry outboard of the acromion: shoulder tip ends `armhole_d` inside the shoulder joint
+        xs = {sd: abs(body.arm_axis(sd)[0].x) - armhole_d for sd in ("L", "R")}
+        gone = [v for v in bm.verts if body.is_arm(v.co) and abs(v.co.x) > xs["L" if v.co.x > 0 else "R"]]
+        bmesh.ops.delete(bm, geom=gone, context='VERTS')
     bm.verts.ensure_lookup_table()
     _largest_component(bm, Vector((0, 0, 1.3)))
     return bm
@@ -197,7 +224,66 @@ def fourier_ring(pos_xy, harmonics=3):
     return out
 
 
-def extrude_hem(bm, loop, z_hem, steps=7, flare=0.0, neck_in=0.0, roundness=0.6, rib_start=None, rib_shrink=0.0):
+def fit_ring3(ring, harm_r=4, harm_z=2):
+    """Replace a ragged closed ring by a smooth one: low-pass both the polar radius and the height about the centroid."""
+    n = len(ring)
+    pts = [Vector(v.co) for v in ring]
+    cx = sum(p.x for p in pts) / n; cy = sum(p.y for p in pts) / n
+    ang = [math.atan2(p.y - cy, p.x - cx) for p in pts]
+    rad = [math.hypot(p.x - cx, p.y - cy) for p in pts]
+    zz = [p.z for p in pts]
+    order = sorted(range(n), key=lambda i: ang[i])
+    a = [ang[i] for i in order]
+    def lp(vals, H):
+        v = [vals[i] for i in order]
+        # a non-uniform angular sampling is handled by weighting with the angular gap
+        gaps = [((a[(i + 1) % n] - a[i]) % (2 * math.pi) + (a[i] - a[i - 1]) % (2 * math.pi)) / 2 for i in range(n)]
+        tot = sum(gaps)
+        w = [g / tot for g in gaps]
+        c0 = sum(v[i] * w[i] for i in range(n))
+        co = [(2 * sum(v[i] * w[i] * math.cos(k * a[i]) for i in range(n)), 2 * sum(v[i] * w[i] * math.sin(k * a[i]) for i in range(n))) for k in range(1, H + 1)]
+        def ev(t):
+            r = c0
+            for k in range(1, H + 1):
+                r += co[k - 1][0] * math.cos(k * t) + co[k - 1][1] * math.sin(k * t)
+            return r
+        return ev
+    fr, fz = lp(rad, harm_r), lp(zz, harm_z)
+    for i, v in enumerate(ring):
+        r = fr(ang[i]); z = fz(ang[i])
+        v.co = Vector((cx + r * math.cos(ang[i]), cy + r * math.sin(ang[i]), z))
+
+
+def fit_ring_pca(ring, harm_r=3, harm_n=2):
+    """Smooth a closed ring that lies in an arbitrary plane (armholes, sleeve openings): fit the best plane (PCA),
+    low-pass the polar radius and the out-of-plane offset about the centroid."""
+    import numpy as np
+    n = len(ring)
+    pts = [Vector(v.co) for v in ring]
+    c = sum(pts, Vector()) / n
+    A = np.array([[p.x - c.x, p.y - c.y, p.z - c.z] for p in pts])
+    _, _, vt = np.linalg.svd(A, full_matrices=False)
+    e1, e2 = Vector(vt[0]), Vector(vt[1])
+    nrm = e1.cross(e2).normalized()
+    ang = [math.atan2((p - c).dot(e2), (p - c).dot(e1)) for p in pts]
+    rad = [math.hypot((p - c).dot(e1), (p - c).dot(e2)) for p in pts]
+    off = [(p - c).dot(nrm) for p in pts]
+    order = sorted(range(n), key=lambda i: ang[i])
+    a = [ang[i] for i in order]
+    gaps = [((a[(i + 1) % n] - a[i]) % (2 * math.pi) + (a[i] - a[i - 1]) % (2 * math.pi)) / 2 for i in range(n)]
+    tot = sum(gaps); w = [g / tot for g in gaps]
+    def lp(vals, H):
+        v = [vals[i] for i in order]
+        c0 = sum(v[i] * w[i] for i in range(n))
+        co = [(2 * sum(v[i] * w[i] * math.cos(k * a[i]) for i in range(n)), 2 * sum(v[i] * w[i] * math.sin(k * a[i]) for i in range(n))) for k in range(1, H + 1)]
+        return lambda t: c0 + sum(co[k - 1][0] * math.cos(k * t) + co[k - 1][1] * math.sin(k * t) for k in range(1, H + 1))
+    fr, fo = lp(rad, harm_r), lp(off, harm_n)
+    for i, v in enumerate(ring):
+        r, o = fr(ang[i]), fo(ang[i])
+        v.co = c + e1 * (r * math.cos(ang[i])) + e2 * (r * math.sin(ang[i])) + nrm * o
+
+
+def extrude_hem(bm, loop, z_hem, steps=7, flare=0.0, neck_in=0.0, roundness=0.6, rib_start=None, rib_shrink=0.0, keep_outside=False):
     """Extrude a hip loop straight down to z_hem in `steps` rings; rings are progressively rounded
     (Laplacian along the ring) so the peanut-shaped hip becomes a clean tube; last rings may narrow (rib)."""
     ring = loop
@@ -212,6 +298,13 @@ def extrude_hem(bm, loop, z_hem, steps=7, flare=0.0, neck_in=0.0, roundness=0.6,
         prev = rings[-1]
         orig = [(v.co.x, v.co.y) for v in rings[0]]
         sm = fourier_ring(orig, harmonics=3)
+        if keep_outside:                          # never let the smoothed ring fall inside the body outline
+            sm2 = []
+            for o, q in zip(orig, sm):
+                ro = math.hypot(o[0] - cx, o[1] - cy); rq = math.hypot(q[0] - cx, q[1] - cy)
+                f = max(ro, rq) / max(rq, 1e-9)
+                sm2.append((cx + (q[0] - cx) * f, cy + (q[1] - cy) * f))
+            sm = sm2
         w = min(1.0, t * 1.6)                    # reach the clean smooth ring by ~60 % of the way down
         pos = [Vector((o[0] + (q[0] - o[0]) * w, o[1] + (q[1] - o[1]) * w, zk)) for o, q in zip(orig, sm)]
         # radial flare / rib
@@ -828,6 +921,7 @@ def make_mannequin(body, name="Mannequin"):
     hm = bpy.data.meshes.new(name + "_head")
     hb.to_mesh(hm); hb.free()
     ho = bpy.data.objects.new(name + "_head", hm)
+    ho["gl_head"] = json.dumps(dict(c=[hc.x, (max(ys) + min(ys)) * 0.5, cz - 0.018], r=[rx, ry, rz]))
     bpy.context.scene.collection.objects.link(ho)
     for p in hm.polygons:
         p.use_smooth = True
@@ -942,3 +1036,54 @@ def make_shoes(body, name="Shoes", ease=0.020, sole=0.026, top=0.112, toe_lift=0
         p.material_index = 1 if zc < sole * 0.8 else 0
     sub = ob.modifiers.new("ss", "SUBSURF"); sub.levels = 2; sub.render_levels = 2
     return ob
+
+
+# ====================================================================== generic UV packer (accessories)
+
+def generic_uv(ob, piece_of_face, uv_of, names, ppm=2400, atlas=2048, pad=0.015, uvname="pattern", store=True):
+    """piece_of_face(poly)->piece name; uv_of(vertex_index, piece)->(x_local, z_local) in metres.
+    Packs the pieces, writes the UV layer + manifest (same schema as build_uv)."""
+    me = ob.data
+    uvl = me.uv_layers.get(uvname) or me.uv_layers.new(name=uvname)
+    face_piece = [piece_of_face(p) for p in me.polygons]
+    loc = {n: [] for n in names}
+    uvl_local = {}
+    for pi, poly in enumerate(me.polygons):
+        pn = face_piece[pi]
+        for li in poly.loop_indices:
+            uvl_local[li] = uv_of(me.loops[li].vertex_index, pn)
+            loc[pn].append(uvl_local[li])
+    boxes = {}
+    for n in names:
+        if loc[n]:
+            xs = [u for u, _ in loc[n]]; zs = [z for _, z in loc[n]]
+            boxes[n] = dict(minx=min(xs), minz=min(zs), w=max(xs) - min(xs), h=max(zs) - min(zs))
+    side_m = atlas / ppm
+    x = y = rowh = 0.0
+    placed = {}
+    for n in sorted(boxes, key=lambda k: -boxes[k]["h"]):
+        b = boxes[n]
+        if x + b["w"] + pad > side_m:
+            x = 0.0; y += rowh + pad; rowh = 0.0
+        placed[n] = (x + pad * 0.5, y + pad * 0.5)
+        x += b["w"] + pad; rowh = max(rowh, b["h"])
+    if y + rowh + pad > side_m:
+        return generic_uv(ob, piece_of_face, uv_of, names, ppm * 0.85, atlas, pad, uvname, store)
+    order = [n for n in names if n in boxes]
+    for pi, poly in enumerate(me.polygons):
+        pn = face_piece[pi]; b = boxes[pn]; ax_, ay_ = placed[pn]
+        poly.material_index = order.index(pn)
+        for li in poly.loop_indices:
+            u, z = uvl_local[li]
+            uvl.data[li].uv = ((ax_ + (u - b["minx"])) / side_m, 1.0 - (ay_ + (b["minz"] + b["h"] - z)) / side_m)
+    me.uv_layers.active = uvl
+    man = dict(px_per_m=atlas / side_m, size_px=atlas, side_m=side_m, order=order,
+               pieces={n: dict(ax=placed[n][0], ay=placed[n][1], w=boxes[n]["w"], h=boxes[n]["h"], minx=boxes[n]["minx"], minz=boxes[n]["minz"], flipx=False) for n in order})
+    polys = {n: [] for n in order}; ptags = {n: [] for n in order}
+    for pi, poly in enumerate(me.polygons):
+        polys[face_piece[pi]].append([[round(uvl_local[li][0], 4), round(uvl_local[li][1], 4)] for li in poly.loop_indices])
+        ptags[face_piece[pi]].append("")
+    man["polys"] = polys; man["ptags"] = ptags
+    if store:
+        ob["gl_atlas"] = json.dumps(man)
+    return man

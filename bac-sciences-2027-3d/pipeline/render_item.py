@@ -12,14 +12,20 @@ tex, cw = E("TEX"), E("CW", "rose")
 def mats_for(name, prefix, micro):
     return materials.atlas_material(name, f"{tex}/{prefix}_albedo.png", f"{tex}/{prefix}_normal.png", f"{tex}/{prefix}_orm.png",
                                     micro=micro, normal_strength=float(E("NSTR", "1.0")), sheen=float(E("SHEEN", "0.45")))
-g = gl.garment()
-fab = mats_for("fabric", cw, E("MICRO", "fleece"))
-materials.apply_all(g, fab)
-hood = bpy.data.objects.get("CD_Hood")
-if hood:
-    materials.apply_all(hood, mats_for("hood", cw + "_hood", E("MICRO", "fleece")))
+import os
+for o in bpy.data.objects:
+    if "gl_texkey" in o.keys():
+        key = cw + o["gl_texkey"]
+        if os.path.exists(f"{tex}/{key}_albedo.png"):
+            micro = o.get("gl_micro", "fleece")
+            if o.get("gl_micro") == "none" or micro == "":
+                micro = None
+            materials.apply_all(o, mats_for("m_" + o.name, key, micro))
 for o in bpy.data.objects:
     if o.name in ("CD_Man_Body",):
+        o.hide_render = True
+for o in bpy.data.objects:
+    if E("HIDE") and o.name.startswith(tuple(E("HIDE").split(","))):
         o.hide_render = True
 W, H = int(E("W", 1080)), int(E("H", 1620))
 studio.render_settings(W, H, samples=int(E("SAMPLES", 48)), threads=4)

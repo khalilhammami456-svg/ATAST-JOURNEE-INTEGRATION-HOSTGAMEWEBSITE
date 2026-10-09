@@ -1,0 +1,1489 @@
+{
+ "items": [
+  {
+   "id": "T1",
+   "name": "NUIT",
+   "kind": "tee",
+   "title": "T-shirt minimal premium",
+   "fabric": "Single jersey 240 gsm, 100 % organic combed cotton, garment washed",
+   "gsm": "240 g/m²",
+   "make": "Jersey bio peigné · col rib 1x1 · piqûre double aiguille · broderie satin 4 cm (≈3 800 pts est.) · sérigraphie base eau 2 couleurs dos",
+   "colorways": [
+    {
+     "key": "nuit",
+     "label": "Nuit",
+     "hex": "#0F1730"
+    },
+    {
+     "key": "chalk",
+     "label": "Chalk",
+     "hex": "#EFEBE2"
+    },
+    {
+     "key": "rose",
+     "label": "Rose poudré",
+     "hex": "#D9A3A8"
+    }
+   ],
+   "refs": [
+    "ref4"
+   ],
+   "art": [
+    "Poitrine gauche : mini hélice d’ADN brodée (4 cm)",
+    "Dos : double hélice sérigraphiée 30 cm, appariement A–T / G–C exact",
+    "Dos, sous l’hélice : « ON NAÎT UNIQUE »",
+    "Col : côtes 1x1, piqûre double aiguille"
+   ],
+   "note": "Dos : double hélice avec appariement exact A–T (2 liaisons H) et G–C (3 liaisons H).",
+   "views": {
+    "front": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 0,
+     "dist": 4.3
+    },
+    "back": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 180,
+     "dist": 4.3
+    },
+    "q": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 36,
+     "dist": 4.0
+    }
+   },
+   "glb": "assets/T1/T1.glb",
+   "assets": "assets/T1",
+   "hotspots": [
+    {
+     "label": "Broderie ADN poitrine",
+     "pos": [
+      0.095,
+      -0.16,
+      1.42
+     ],
+     "dist": 0.45,
+     "yaw": 0
+    },
+    {
+     "label": "ADN dos",
+     "pos": [
+      0,
+      0.13,
+      1.3
+     ],
+     "dist": 0.9,
+     "yaw": 180
+    },
+    {
+     "label": "Col rib",
+     "pos": [
+      0,
+      -0.1,
+      1.56
+     ],
+     "dist": 0.55,
+     "yaw": 0
+    }
+   ]
+  },
+  {
+   "id": "T2",
+   "name": "TABLEAU",
+   "kind": "tee",
+   "title": "T-shirt graphique audacieux",
+   "fabric": "Heavy jersey 260 gsm, 100 % cotton, boxy cut",
+   "gsm": "260 g/m²",
+   "make": "Jersey épais coton · coupe boxy · sérigraphie plastisol 4 couleurs (tuiles) · « 2027 » dos 1 couleur",
+   "colorways": [
+    {
+     "key": "chalk",
+     "label": "Chalk",
+     "hex": "#EFEBE2"
+    },
+    {
+     "key": "lab",
+     "label": "Gris labo",
+     "hex": "#8E959E"
+    },
+    {
+     "key": "maroon",
+     "label": "Bordeaux",
+     "hex": "#5C1526"
+    }
+   ],
+   "refs": [
+    "ref6"
+   ],
+   "art": [
+    "Poitrine : tuiles B · Ac · Sc · I (« BAC SCI ») 40 cm, 4 couleurs",
+    "Poitrine, sous les tuiles : légende mono",
+    "Dos : « 2027 » (zéro-orbite) 32 cm + ligne TÉBOURBA · BAC SCIENCES",
+    "Manche droite : tuile Sc brodée"
+   ],
+   "note": "B (Z=5) · Ac (Z=89) · Sc (Z=21) · I (Z=53) : les symboles se lisent « BAC SCI ».",
+   "views": {
+    "front": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 0,
+     "dist": 4.3
+    },
+    "back": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 180,
+     "dist": 4.3
+    },
+    "q": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 36,
+     "dist": 4.0
+    }
+   },
+   "glb": "assets/T2/T2.glb",
+   "assets": "assets/T2",
+   "hotspots": [
+    {
+     "label": "Tuiles B·Ac·Sc·I",
+     "pos": [
+      0,
+      -0.16,
+      1.38
+     ],
+     "dist": 0.85,
+     "yaw": 0
+    },
+    {
+     "label": "2027 dos",
+     "pos": [
+      0,
+      0.13,
+      1.34
+     ],
+     "dist": 0.8,
+     "yaw": 180
+    },
+    {
+     "label": "Tuile Sc manche",
+     "pos": [
+      -0.34,
+      -0.03,
+      1.33
+     ],
+     "dist": 0.45,
+     "yaw": -80
+    }
+   ]
+  },
+  {
+   "id": "T3",
+   "name": "CAFÉINE",
+   "kind": "tee",
+   "title": "T-shirt illustration scientifique",
+   "fabric": "Single jersey 220 gsm, cotton / modal 90/10",
+   "gsm": "220 g/m²",
+   "make": "Jersey coton/modal 90/10 · sérigraphie base eau 2 couleurs · formules en mono-espacé",
+   "colorways": [
+    {
+     "key": "lab",
+     "label": "Gris labo",
+     "hex": "#A3A9B1"
+    },
+    {
+     "key": "rose",
+     "label": "Rose poudré",
+     "hex": "#D9A3A8"
+    },
+    {
+     "key": "nuit",
+     "label": "Nuit",
+     "hex": "#0F1730"
+    }
+   ],
+   "refs": [
+    "ref5"
+   ],
+   "art": [
+    "Poitrine : caféine C₈H₁₀N₄O₂ 30 cm + formule et M = 194,19 g·mol⁻¹",
+    "Dos : carré de Punnett Aa × Aa (1 : 2 : 1 ; 3 : 1)"
+   ],
+   "note": "Caféine = 1,3,7-triméthylxanthine, C₈H₁₀N₄O₂, M = 194,19 g·mol⁻¹. Punnett Aa×Aa → 1 AA : 2 Aa : 1 aa.",
+   "views": {
+    "front": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 0,
+     "dist": 4.3
+    },
+    "back": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 180,
+     "dist": 4.3
+    },
+    "q": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 36,
+     "dist": 4.0
+    }
+   },
+   "glb": "assets/T3/T3.glb",
+   "assets": "assets/T3",
+   "hotspots": [
+    {
+     "label": "Caféine C₈H₁₀N₄O₂",
+     "pos": [
+      0,
+      -0.16,
+      1.38
+     ],
+     "dist": 0.9,
+     "yaw": 0
+    },
+    {
+     "label": "Carré de Punnett",
+     "pos": [
+      0,
+      0.13,
+      1.32
+     ],
+     "dist": 0.9,
+     "yaw": 180
+    }
+   ]
+  },
+  {
+   "id": "H1",
+   "name": "ROSE ORBITE",
+   "kind": "hoodie",
+   "title": "Hoodie zippé oversize",
+   "fabric": "Brushed-back fleece 380 gsm (80 % cotton / 20 % polyester), rib 1x1 with 2 % elastane, YKK-type metal zip",
+   "gsm": "380 g/m²",
+   "make": "Molleton gratté 80/20 · côtes 1x1 + 2 % élasthanne · zip métal · broderie satin (écusson tissé ≈ 7 cm, script manche, tuiles dos) · étiquette tissée",
+   "colorways": [
+    {
+     "key": "rose",
+     "label": "Rose poudré",
+     "hex": "#D9A3A8"
+    },
+    {
+     "key": "chalk",
+     "label": "Chalk",
+     "hex": "#EFEBE2"
+    },
+    {
+     "key": "nuit",
+     "label": "Nuit",
+     "hex": "#0F1730"
+    }
+   ],
+   "refs": [
+    "ref1"
+   ],
+   "art": [
+    "Poitrine gauche : écusson tissé « Sceau Surus » 7 cm",
+    "Empiècement et zip métal, cordons",
+    "Manche gauche : script « Bac Sciences » + 2027 brodés",
+    "Dos : tuiles B·Ac·Sc·I brodées + coordonnées 36°50′N 9°50′E",
+    "Capuche : devise TRAVERSER L’INCONNU / عبور المجهول",
+    "Ourlet : étiquette tissée BAC SCIENCES 2027"
+   ],
+   "note": "Référence 1 : hoodie rose zippé, pièce d’empiècement, zip métal, script brodé, écusson.",
+   "views": {
+    "front": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 0,
+     "dist": 4.3
+    },
+    "back": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 180,
+     "dist": 4.3
+    },
+    "q": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 36,
+     "dist": 4.0
+    }
+   },
+   "glb": "assets/H1/H1.glb",
+   "assets": "assets/H1",
+   "hotspots": [
+    {
+     "label": "Écusson tissé",
+     "pos": [
+      0.105,
+      -0.16,
+      1.41
+     ],
+     "dist": 0.55,
+     "yaw": 0
+    },
+    {
+     "label": "Zip & cordons",
+     "pos": [
+      0,
+      -0.15,
+      1.42
+     ],
+     "dist": 0.7,
+     "yaw": 0
+    },
+    {
+     "label": "Tuiles dos",
+     "pos": [
+      0,
+      0.14,
+      1.32
+     ],
+     "dist": 0.9,
+     "yaw": 180
+    },
+    {
+     "label": "Script manche",
+     "pos": [
+      0.4,
+      -0.03,
+      1.28
+     ],
+     "dist": 0.6,
+     "yaw": 90
+    },
+    {
+     "label": "Capuche",
+     "pos": [
+      0,
+      0.16,
+      1.55
+     ],
+     "dist": 0.9,
+     "yaw": 180
+    }
+   ]
+  },
+  {
+   "id": "H2",
+   "name": "GRIS COLLÈGE",
+   "kind": "hoodie",
+   "title": "Hoodie pull collégial",
+   "fabric": "Loopback french terry 340 gsm, 100 % cotton, kangaroo pocket",
+   "gsm": "340 g/m²",
+   "make": "French terry bouclette 100 % coton · poche kangourou piquée · broderie wordmark · collage dos sérigraphié 3 couleurs",
+   "colorways": [
+    {
+     "key": "lab",
+     "label": "Gris labo",
+     "hex": "#8E959E"
+    },
+    {
+     "key": "chalk",
+     "label": "Chalk",
+     "hex": "#EFEBE2"
+    },
+    {
+     "key": "maroon",
+     "label": "Bordeaux",
+     "hex": "#5C1526"
+    }
+   ],
+   "refs": [
+    "ref3"
+   ],
+   "art": [
+    "Poitrine gauche : wordmark HΛNNIBΛL brodé",
+    "Poche kangourou piquée",
+    "Dos : collage sérigraphié (SCIENCES, ADN, Surus, علوم, 2027, badges)",
+    "Manche gauche : 2027 · manche droite : HΛNNIBΛL",
+    "Ourlet : étiquette tissée"
+   ],
+   "note": "Référence 3 : collage dos (ADN, Surus, علوم, 2027, badges Physique/Chimie/SVT). Arabe à faire relire par un locuteur natif.",
+   "views": {
+    "front": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 0,
+     "dist": 4.3
+    },
+    "back": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 180,
+     "dist": 4.3
+    },
+    "q": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 36,
+     "dist": 4.0
+    }
+   },
+   "glb": "assets/H2/H2.glb",
+   "assets": "assets/H2",
+   "hotspots": [
+    {
+     "label": "Wordmark brodé",
+     "pos": [
+      0.115,
+      -0.16,
+      1.43
+     ],
+     "dist": 0.55,
+     "yaw": 0
+    },
+    {
+     "label": "Poche kangourou",
+     "pos": [
+      0,
+      -0.17,
+      1.0
+     ],
+     "dist": 0.9,
+     "yaw": 0
+    },
+    {
+     "label": "Collage dos",
+     "pos": [
+      0,
+      0.14,
+      1.28
+     ],
+     "dist": 1.0,
+     "yaw": 180
+    },
+    {
+     "label": "Manche 2027",
+     "pos": [
+      0.44,
+      -0.03,
+      1.27
+     ],
+     "dist": 0.6,
+     "yaw": 90
+    }
+   ]
+  },
+  {
+   "id": "H3",
+   "name": "NUIT COSMIQUE",
+   "kind": "hoodie",
+   "title": "Hoodie technique",
+   "fabric": "Bonded tech fleece 320 gsm (poly / elastane), water-repellent face, tape-seamed",
+   "gsm": "320 g/m²",
+   "make": "Polaire technique bonded déperlante · coutures recouvertes · zip nylon · impression pigmentaire dos · bandes orbite manches",
+   "colorways": [
+    {
+     "key": "nuit",
+     "label": "Nuit",
+     "hex": "#0B1226"
+    },
+    {
+     "key": "violet",
+     "label": "Violet cosmique",
+     "hex": "#4B36B8"
+    },
+    {
+     "key": "lab",
+     "label": "Gris labo",
+     "hex": "#4B525C"
+    }
+   ],
+   "refs": [
+    "ref2"
+   ],
+   "art": [
+    "Poitrine gauche : mini écusson brodé",
+    "Dos : impression cosmique 40 cm (spirale, orbites, E = mc²)",
+    "Manches : bande d’orbites répétées",
+    "Ourlet : étiquette tissée violette"
+   ],
+   "note": "Référence 2 : énergie cosmique. Énoncé neutre : « L’énergie ne se crée ni ne se détruit : elle se transforme ».",
+   "views": {
+    "front": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 0,
+     "dist": 4.3
+    },
+    "back": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 180,
+     "dist": 4.3
+    },
+    "q": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 36,
+     "dist": 4.0
+    }
+   },
+   "glb": "assets/H3/H3.glb",
+   "assets": "assets/H3",
+   "hotspots": [
+    {
+     "label": "Cosmos dos",
+     "pos": [
+      0,
+      0.14,
+      1.3
+     ],
+     "dist": 1.1,
+     "yaw": 180
+    },
+    {
+     "label": "Bande orbite manche",
+     "pos": [
+      0.4,
+      -0.03,
+      1.28
+     ],
+     "dist": 0.6,
+     "yaw": 90
+    },
+    {
+     "label": "Écusson poitrine",
+     "pos": [
+      0.105,
+      -0.16,
+      1.43
+     ],
+     "dist": 0.5,
+     "yaw": 0
+    }
+   ]
+  },
+  {
+   "id": "J1",
+   "name": "VARSITY HANNIBAL",
+   "kind": "jacket",
+   "title": "Varsity jacket",
+   "fabric": "Melton wool-blend body 500 gsm, faux-leather sleeves, rib collar/cuffs/hem, snap front",
+   "gsm": "500 g/m² (feutre) · manches simili-cuir",
+   "make": "Feutre mélange laine · manches simili-cuir grainé · côtes rayées · pressions métal · chenille « H » · écussons tissés · broderie dos",
+   "colorways": [
+    {
+     "key": "nuit-rose",
+     "label": "Nuit / Rose",
+     "hex": "#0F1730"
+    },
+    {
+     "key": "maroon-chalk",
+     "label": "Bordeaux / Chalk",
+     "hex": "#5C1526"
+    }
+   ],
+   "refs": [
+    "ref3"
+   ],
+   "art": [
+    "Poitrine gauche : « H » chenille sur feutre",
+    "Manche gauche : patch « 2027 » · manche droite : écusson Surus",
+    "Dos : SCIENCES brodé en arc + écusson + coordonnées",
+    "Côtes à deux filets, pressions métal"
+   ],
+   "note": "Veste varsity : corps nuit, manches rose, côtes chalk à deux filets.",
+   "views": {
+    "front": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 0,
+     "dist": 4.3
+    },
+    "back": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 180,
+     "dist": 4.3
+    },
+    "q": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 36,
+     "dist": 4.0
+    }
+   },
+   "glb": "assets/J1/J1.glb",
+   "assets": "assets/J1",
+   "hotspots": [
+    {
+     "label": "Chenille H",
+     "pos": [
+      0.105,
+      -0.16,
+      1.42
+     ],
+     "dist": 0.6,
+     "yaw": 0
+    },
+    {
+     "label": "Écusson manche",
+     "pos": [
+      -0.4,
+      -0.05,
+      1.27
+     ],
+     "dist": 0.6,
+     "yaw": -90
+    },
+    {
+     "label": "SCIENCES brodé",
+     "pos": [
+      0,
+      0.14,
+      1.32
+     ],
+     "dist": 1.0,
+     "yaw": 180
+    },
+    {
+     "label": "Pressions",
+     "pos": [
+      0,
+      -0.16,
+      1.25
+     ],
+     "dist": 0.7,
+     "yaw": 0
+    }
+   ]
+  },
+  {
+   "id": "J2",
+   "name": "COACH LABO",
+   "kind": "jacket",
+   "title": "Veste coach légère",
+   "fabric": "Nylon taffeta 70D, DWR, lightly padded none, snap front",
+   "gsm": "70D taffetas",
+   "make": "Taffetas nylon DWR · pressions · col montant · ourlet élastiqué · broderie wordmark · impression molécule dos",
+   "colorways": [
+    {
+     "key": "lab",
+     "label": "Gris labo",
+     "hex": "#B7BCC3"
+    },
+    {
+     "key": "nuit",
+     "label": "Nuit",
+     "hex": "#0F1730"
+    }
+   ],
+   "refs": [
+    "ref5"
+   ],
+   "art": [
+    "Poitrine gauche : wordmark brodé",
+    "Dos : molécule de caféine imprimée + formule",
+    "Pressions, col montant, ourlet élastiqué"
+   ],
+   "note": "Référence 5 : molécule. Caféine C₈H₁₀N₄O₂ (SMILES CN1C=NC2=C1C(=O)N(C(=O)N2C)C).",
+   "views": {
+    "front": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 0,
+     "dist": 4.3
+    },
+    "back": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 180,
+     "dist": 4.3
+    },
+    "q": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 36,
+     "dist": 4.0
+    }
+   },
+   "glb": "assets/J2/J2.glb",
+   "assets": "assets/J2",
+   "hotspots": [
+    {
+     "label": "Wordmark",
+     "pos": [
+      0.075,
+      -0.16,
+      1.43
+     ],
+     "dist": 0.5,
+     "yaw": 0
+    },
+    {
+     "label": "Molécule dos",
+     "pos": [
+      0,
+      0.14,
+      1.3
+     ],
+     "dist": 1.0,
+     "yaw": 180
+    },
+    {
+     "label": "Pressions",
+     "pos": [
+      0,
+      -0.16,
+      1.25
+     ],
+     "dist": 0.7,
+     "yaw": 0
+    }
+   ]
+  },
+  {
+   "id": "V1",
+   "name": "GILET VARSITY",
+   "kind": "vest",
+   "title": "Gilet varsity",
+   "fabric": "Melton wool-blend 500 gsm, quilted lining, rib trim",
+   "gsm": "500 g/m²",
+   "make": "Feutre mélange laine · côtes rayées · pressions · écusson tissé · broderie dos arquée",
+   "colorways": [
+    {
+     "key": "nuit",
+     "label": "Nuit",
+     "hex": "#0F1730"
+    },
+    {
+     "key": "maroon",
+     "label": "Bordeaux",
+     "hex": "#5C1526"
+    }
+   ],
+   "refs": [
+    "ref3"
+   ],
+   "art": [
+    "Poitrine gauche : écusson tissé",
+    "Dos : SCIENCES en arc, Surus, 2027",
+    "Côtes à deux filets, pressions"
+   ],
+   "note": "Gilet varsity sans manches.",
+   "views": {
+    "front": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 0,
+     "dist": 4.3
+    },
+    "back": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 180,
+     "dist": 4.3
+    },
+    "q": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 36,
+     "dist": 4.0
+    }
+   },
+   "glb": "assets/V1/V1.glb",
+   "assets": "assets/V1",
+   "hotspots": [
+    {
+     "label": "Écusson",
+     "pos": [
+      0.105,
+      -0.16,
+      1.42
+     ],
+     "dist": 0.55,
+     "yaw": 0
+    },
+    {
+     "label": "SCIENCES dos",
+     "pos": [
+      0,
+      0.14,
+      1.28
+     ],
+     "dist": 1.0,
+     "yaw": 180
+    }
+   ]
+  },
+  {
+   "id": "V2",
+   "name": "COUCHE LABO",
+   "kind": "vest",
+   "title": "Gilet de superposition",
+   "fabric": "Quilted ripstop 30D, recycled fill 80 g, funnel collar, zip",
+   "gsm": "30D ripstop · garnissage 80 g",
+   "make": "Ripstop matelassé horizontal (baffles 8 cm) · col cheminée · zip · motif orbite ton sur ton",
+   "colorways": [
+    {
+     "key": "lab",
+     "label": "Gris labo",
+     "hex": "#8E959E"
+    },
+    {
+     "key": "rose",
+     "label": "Rose poudré",
+     "hex": "#D9A3A8"
+    }
+   ],
+   "refs": [
+    "ref2"
+   ],
+   "art": [
+    "Matelassage horizontal (baffles 8 cm)",
+    "Dos : motif orbite ton sur ton + wordmark",
+    "Poitrine gauche : étiquette tissée"
+   ],
+   "note": "Gilet de superposition ton sur ton.",
+   "views": {
+    "front": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 0,
+     "dist": 4.3
+    },
+    "back": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 180,
+     "dist": 4.3
+    },
+    "q": {
+     "target": [
+      0,
+      -0.02,
+      1.08
+     ],
+     "yaw": 36,
+     "dist": 4.0
+    }
+   },
+   "glb": "assets/V2/V2.glb",
+   "assets": "assets/V2",
+   "hotspots": [
+    {
+     "label": "Matelassage",
+     "pos": [
+      0,
+      -0.17,
+      1.2
+     ],
+     "dist": 0.9,
+     "yaw": 0
+    },
+    {
+     "label": "Orbites dos",
+     "pos": [
+      0,
+      0.15,
+      1.28
+     ],
+     "dist": 1.0,
+     "yaw": 180
+    }
+   ]
+  },
+  {
+   "id": "S1",
+   "name": "ORBITE",
+   "kind": "scarf",
+   "title": "Écharpe motif orbites",
+   "fabric": "Brushed wool-blend jacquard 180 x 32 cm, chalk contrast ends",
+   "gsm": "≈ 420 g/m²",
+   "make": "Jacquard laine/viscose brossé · bouts chalk contrastés · franges 6 cm",
+   "colorways": [
+    {
+     "key": "nuit",
+     "label": "Nuit",
+     "hex": "#0B1226"
+    },
+    {
+     "key": "maroon",
+     "label": "Bordeaux",
+     "hex": "#5C1526"
+    }
+   ],
+   "refs": [
+    "ref2"
+   ],
+   "art": [
+    "Motif orbite répété sur toute la longueur",
+    "Bouts chalk : « BAC SCIENCES 2027 » + filets"
+   ],
+   "note": "Motif répété : atome à trois orbites et noyau.",
+   "views": {
+    "front": {
+     "target": [
+      0,
+      -0.05,
+      1.35
+     ],
+     "yaw": 0,
+     "dist": 2.6
+    },
+    "back": {
+     "target": [
+      0,
+      -0.05,
+      1.35
+     ],
+     "yaw": 180,
+     "dist": 2.6
+    },
+    "q": {
+     "target": [
+      0,
+      -0.05,
+      1.35
+     ],
+     "yaw": 36,
+     "dist": 2.4
+    }
+   },
+   "glb": "assets/S1/S1.glb",
+   "assets": "assets/S1",
+   "hotspots": [
+    {
+     "label": "Motif orbite",
+     "pos": [
+      0,
+      -0.14,
+      1.3
+     ],
+     "dist": 0.8,
+     "yaw": 0
+    },
+    {
+     "label": "Bout contrasté",
+     "pos": [
+      0.07,
+      -0.14,
+      1.0
+     ],
+     "dist": 0.7,
+     "yaw": 0
+    }
+   ]
+  },
+  {
+   "id": "S2",
+   "name": "BORD",
+   "kind": "scarf",
+   "title": "Écharpe minimale bordée",
+   "fabric": "Merino-viscose knit 200 x 28 cm, jacquard border",
+   "gsm": "≈ 300 g/m²",
+   "make": "Maille merinos/viscose · bordure typographique jacquard",
+   "colorways": [
+    {
+     "key": "rose",
+     "label": "Rose poudré",
+     "hex": "#D9A3A8"
+    },
+    {
+     "key": "chalk",
+     "label": "Chalk",
+     "hex": "#EFEBE2"
+    }
+   ],
+   "refs": [
+    "ref6"
+   ],
+   "art": [
+    "Bordure typographique : TÉBOURBA · BAC SCIENCES · 2027 · LYCÉE HANNIBAL",
+    "Filets de bout + monogramme Orbite-Λ"
+   ],
+   "note": "Bordure : TÉBOURBA · BAC SCIENCES · 2027 · LYCÉE HANNIBAL.",
+   "views": {
+    "front": {
+     "target": [
+      0,
+      -0.05,
+      1.35
+     ],
+     "yaw": 0,
+     "dist": 2.6
+    },
+    "back": {
+     "target": [
+      0,
+      -0.05,
+      1.35
+     ],
+     "yaw": 180,
+     "dist": 2.6
+    },
+    "q": {
+     "target": [
+      0,
+      -0.05,
+      1.35
+     ],
+     "yaw": 36,
+     "dist": 2.4
+    }
+   },
+   "glb": "assets/S2/S2.glb",
+   "assets": "assets/S2",
+   "hotspots": [
+    {
+     "label": "Bordure",
+     "pos": [
+      0,
+      -0.14,
+      1.35
+     ],
+     "dist": 0.8,
+     "yaw": 0
+    }
+   ]
+  },
+  {
+   "id": "A1",
+   "name": "CASQUETTE",
+   "kind": "cap",
+   "title": "Casquette 6 panneaux",
+   "fabric": "Cotton twill 8 oz, metal-eyelets, strap-back",
+   "gsm": "8 oz",
+   "make": "Twill coton 6 panneaux · œillets · fermeture métal · monogramme brodé",
+   "colorways": [
+    {
+     "key": "nuit",
+     "label": "Nuit",
+     "hex": "#0F1730"
+    },
+    {
+     "key": "rose",
+     "label": "Rose poudré",
+     "hex": "#D9A3A8"
+    }
+   ],
+   "refs": [
+    "ref6"
+   ],
+   "art": [
+    "Devant : monogramme Orbite-Λ brodé",
+    "Arrière : « 2027 » brodé",
+    "6 panneaux, œillets"
+   ],
+   "note": "",
+   "views": {
+    "front": {
+     "target": [
+      0,
+      -0.05,
+      1.7
+     ],
+     "yaw": 0,
+     "dist": 1.5
+    },
+    "back": {
+     "target": [
+      0,
+      -0.05,
+      1.7
+     ],
+     "yaw": 180,
+     "dist": 1.5
+    },
+    "q": {
+     "target": [
+      0,
+      -0.05,
+      1.7
+     ],
+     "yaw": 40,
+     "dist": 1.4
+    }
+   },
+   "glb": "assets/A1/A1.glb",
+   "assets": "assets/A1",
+   "hotspots": [
+    {
+     "label": "Monogramme",
+     "pos": [
+      0,
+      -0.12,
+      1.78
+     ],
+     "dist": 0.5,
+     "yaw": 0
+    },
+    {
+     "label": "2027",
+     "pos": [
+      0,
+      0.1,
+      1.75
+     ],
+     "dist": 0.5,
+     "yaw": 180
+    }
+   ]
+  },
+  {
+   "id": "A2",
+   "name": "BONNET",
+   "kind": "beanie",
+   "title": "Bonnet côtelé",
+   "fabric": "Rib-knit merino/acrylic, folded cuff, woven tab",
+   "gsm": "—",
+   "make": "Maille côtelée mérinos/acrylique · revers · étiquette tissée",
+   "colorways": [
+    {
+     "key": "nuit",
+     "label": "Nuit",
+     "hex": "#0F1730"
+    },
+    {
+     "key": "chalk",
+     "label": "Chalk",
+     "hex": "#EFEBE2"
+    }
+   ],
+   "refs": [],
+   "art": [
+    "Revers : étiquette tissée BAC 2027",
+    "Maille côtelée"
+   ],
+   "note": "",
+   "views": {
+    "front": {
+     "target": [
+      0,
+      -0.05,
+      1.7
+     ],
+     "yaw": 0,
+     "dist": 1.5
+    },
+    "back": {
+     "target": [
+      0,
+      -0.05,
+      1.7
+     ],
+     "yaw": 180,
+     "dist": 1.5
+    },
+    "q": {
+     "target": [
+      0,
+      -0.05,
+      1.7
+     ],
+     "yaw": 40,
+     "dist": 1.4
+    }
+   },
+   "glb": "assets/A2/A2.glb",
+   "assets": "assets/A2",
+   "hotspots": [
+    {
+     "label": "Étiquette",
+     "pos": [
+      0,
+      -0.12,
+      1.72
+     ],
+     "dist": 0.5,
+     "yaw": 0
+    }
+   ]
+  },
+  {
+   "id": "A3",
+   "name": "TOTE",
+   "kind": "tote",
+   "title": "Tote bag",
+   "fabric": "Canvas 12 oz cotton, 40 x 38 cm, 70 cm handles",
+   "gsm": "12 oz",
+   "make": "Toile coton 12 oz · anses sangle · impression centrale",
+   "colorways": [
+    {
+     "key": "chalk",
+     "label": "Chalk",
+     "hex": "#EFEBE2"
+    },
+    {
+     "key": "nuit",
+     "label": "Nuit",
+     "hex": "#0F1730"
+    }
+   ],
+   "refs": [
+    "ref5"
+   ],
+   "art": [
+    "Face : molécule de caféine + formule",
+    "Dos : écusson Surus"
+   ],
+   "note": "",
+   "views": {
+    "front": {
+     "target": [
+      0,
+      0,
+      0.35
+     ],
+     "yaw": 0,
+     "dist": 2.0
+    },
+    "back": {
+     "target": [
+      0,
+      0,
+      0.35
+     ],
+     "yaw": 180,
+     "dist": 2.0
+    },
+    "q": {
+     "target": [
+      0,
+      0,
+      0.35
+     ],
+     "yaw": 35,
+     "dist": 1.9
+    }
+   },
+   "glb": "assets/A3/A3.glb",
+   "assets": "assets/A3",
+   "hotspots": [
+    {
+     "label": "Molécule",
+     "pos": [
+      0,
+      -0.06,
+      0.2
+     ],
+     "dist": 0.9,
+     "yaw": 0
+    }
+   ]
+  },
+  {
+   "id": "A4",
+   "name": "ÉCUSSON",
+   "kind": "patch",
+   "title": "Écusson brodé / tissé",
+   "fabric": "Merrowed-border twill, 80 mm, heat-seal backing",
+   "gsm": "—",
+   "make": "Écusson twill bordure merrow 80 mm · thermocollant",
+   "colorways": [
+    {
+     "key": "nuit",
+     "label": "Nuit",
+     "hex": "#0B1226"
+    }
+   ],
+   "refs": [],
+   "art": [
+    "Écusson brodé 80 mm, bordure merrow"
+   ],
+   "note": "",
+   "views": {
+    "front": {
+     "target": [
+      0,
+      0,
+      0
+     ],
+     "yaw": 0,
+     "dist": 0.35
+    },
+    "back": {
+     "target": [
+      0,
+      0,
+      0
+     ],
+     "yaw": 180,
+     "dist": 0.35
+    },
+    "q": {
+     "target": [
+      0,
+      0,
+      0
+     ],
+     "yaw": 30,
+     "dist": 0.32
+    }
+   },
+   "glb": "assets/A4/A4.glb",
+   "assets": "assets/A4",
+   "hotspots": [
+    {
+     "label": "Écusson",
+     "pos": [
+      0,
+      -0.01,
+      0
+     ],
+     "dist": 0.25,
+     "yaw": 0
+    }
+   ]
+  },
+  {
+   "id": "A5",
+   "name": "ÉTIQUETTE",
+   "kind": "label",
+   "title": "Étiquette tissée",
+   "fabric": "Damask woven polyester, 60 x 12 mm, end-fold",
+   "gsm": "—",
+   "make": "Étiquette damas tissé 60 × 12 mm",
+   "colorways": [
+    {
+     "key": "nuit",
+     "label": "Nuit",
+     "hex": "#0B1226"
+    }
+   ],
+   "refs": [],
+   "art": [
+    "Étiquette tissée BAC SCIENCES 2027, 60 × 12 mm"
+   ],
+   "note": "",
+   "views": {
+    "front": {
+     "target": [
+      0,
+      0,
+      0
+     ],
+     "yaw": 0,
+     "dist": 0.35
+    },
+    "back": {
+     "target": [
+      0,
+      0,
+      0
+     ],
+     "yaw": 180,
+     "dist": 0.35
+    },
+    "q": {
+     "target": [
+      0,
+      0,
+      0
+     ],
+     "yaw": 30,
+     "dist": 0.32
+    }
+   },
+   "glb": "assets/A5/A5.glb",
+   "assets": "assets/A5",
+   "hotspots": [
+    {
+     "label": "Étiquette",
+     "pos": [
+      0,
+      -0.01,
+      0
+     ],
+     "dist": 0.15,
+     "yaw": 0
+    }
+   ]
+  }
+ ]
+}

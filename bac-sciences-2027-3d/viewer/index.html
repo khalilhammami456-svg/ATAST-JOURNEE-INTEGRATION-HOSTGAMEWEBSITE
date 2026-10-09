@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collection 3D · Bac Sciences 2027</title>
+<meta name="description" content="Visionneuse 3D interactive de la collection Lycée Hannibal – Tébourba – Bac Sciences 2027 : rotation, zoom, coloris, face/dos, inspection des broderies.">
+<style>
+:root{
+  --nuit:#0B1226; --nuit2:#111a35; --nuit3:#18234a; --chalk:#F1EEE7; --lab:#8E959E; --rose:#D9A3A8; --maroon:#5C1526; --violet:#6B4EF5; --blue:#2E7BFF; --red:#C8102E;
+  --bg:var(--nuit); --panel:#0f1830; --line:rgba(241,238,231,.14); --text:var(--chalk); --muted:#a9b0bc;
+}
+:root[data-theme="light"]{ --bg:#e9e6df; --panel:#f6f4ef; --line:rgba(11,18,38,.14); --text:#0B1226; --muted:#4a5160; --nuit2:#ffffff; --nuit3:#e3e0d8 }
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:15px/1.45 "Archivo","Inter",system-ui,-apple-system,"Segoe UI",sans-serif}
+button{font:inherit;color:inherit}
+.app{display:grid;grid-template-columns:300px 1fr 330px;grid-template-rows:56px 1fr;height:100vh}
+header{grid-column:1/-1;display:flex;align-items:center;gap:16px;padding:0 20px;border-bottom:1px solid var(--line);background:var(--panel)}
+header .logo{font-weight:800;letter-spacing:.18em;font-size:14px}
+header .logo b{color:var(--violet)}
+header .sub{color:var(--muted);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+header .sp{flex:1}
+.chip{border:1px solid var(--line);background:transparent;border-radius:999px;padding:6px 14px;cursor:pointer;font-size:13px}
+.chip:hover{border-color:var(--violet)}
+.chip[aria-pressed="true"]{background:var(--violet);border-color:var(--violet);color:#fff}
+aside.list{overflow:auto;border-right:1px solid var(--line);background:var(--panel);padding:12px}
+.group{margin:14px 6px 6px;color:var(--muted);font-size:11px;letter-spacing:.18em;text-transform:uppercase}
+.card{display:flex;gap:12px;align-items:center;width:100%;text-align:left;border:1px solid transparent;border-radius:10px;background:transparent;padding:10px;cursor:pointer}
+.card:hover{background:var(--nuit2)}
+.card[aria-current="true"]{background:var(--nuit3);border-color:var(--violet)}
+.card .id{width:38px;height:38px;border-radius:9px;display:grid;place-items:center;font:700 12px "JetBrains Mono",ui-monospace,monospace;background:var(--nuit2);border:1px solid var(--line)}
+.card .t{font-weight:700;font-size:14px}
+.card .s{font-size:12px;color:var(--muted)}
+main{position:relative;min-width:0;background:radial-gradient(1200px 800px at 50% 35%,rgba(107,78,245,.16),transparent 60%),var(--bg)}
+canvas{display:block;width:100%;height:100%;outline:none;touch-action:none}
+.hud{position:absolute;left:0;right:0;bottom:14px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:0 12px}
+.hud .chip{background:rgba(11,18,38,.72);backdrop-filter:blur(8px);color:#F1EEE7;border-color:rgba(241,238,231,.2)}
+:root[data-theme="light"] .hud .chip{background:rgba(255,255,255,.8);color:#0B1226}
+.title{position:absolute;left:18px;top:14px;pointer-events:none}
+.title h1{margin:0;font-size:26px;letter-spacing:.04em}
+.title p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.hint{position:absolute;right:16px;top:14px;color:var(--muted);font-size:12px;text-align:right;pointer-events:none}
+.loading{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;color:var(--muted);letter-spacing:.2em;font-size:12px;text-transform:uppercase}
+aside.info{overflow:auto;border-left:1px solid var(--line);background:var(--panel);padding:18px}
+aside.info h2{margin:0 0 4px;font-size:18px}
+aside.info h3{margin:18px 0 8px;font-size:11px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase}
+.sw{display:flex;gap:10px;flex-wrap:wrap}
+.sw button{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:6px 12px 6px 6px;background:transparent;cursor:pointer;font-size:13px}
+.sw button[aria-pressed="true"]{border-color:var(--violet);box-shadow:0 0 0 2px rgba(107,78,245,.35)}
+.sw i{display:inline-block;width:20px;height:20px;border-radius:50%;border:1px solid rgba(255,255,255,.35)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px}
+.kv dt{color:var(--muted)} .kv dd{margin:0}
+ul.arts{margin:0;padding-left:18px;font-size:13px} ul.arts li{margin:3px 0}
+.hot{display:flex;flex-wrap:wrap;gap:8px}
+.note{margin-top:18px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;color:var(--muted);font-size:12px}
+@media (max-width: 980px){
+  .app{grid-template-columns:1fr;grid-template-rows:56px auto 60vh auto}
+  aside.list{display:flex;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:8px}
+  aside.list .group{display:none} .card{min-width:150px}
+  aside.info{border-left:0;border-top:1px solid var(--line)}
+}
+@media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important} }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo">HΛNNIBΛL <b>·</b> BAC SCIENCES 2027</div>
+    <div class="sub">Lycée Hannibal · Tébourba · Collection 3D</div>
+    <div class="sp"></div>
+    <button class="chip" id="themeBtn" aria-pressed="false" title="Fond clair / sombre">Fond</button>
+  </header>
+  <aside class="list" id="list" aria-label="Pièces de la collection"></aside>
+  <main>
+    <canvas id="c" tabindex="0" aria-label="Visionneuse 3D : glisser pour tourner, molette pour zoomer"></canvas>
+    <div class="title"><h1 id="tName">—</h1><p id="tSub"></p></div>
+    <div class="hint">Glisser : tourner · Molette : zoom · Clic droit : déplacer<br>Touches 1 face · 2 dos · 3 trois-quarts · ←/→ pièce</div>
+    <div class="loading" id="loading">chargement…</div>
+    <div class="hud" id="hud">
+      <button class="chip" data-v="front">Face</button>
+      <button class="chip" data-v="back">Dos</button>
+      <button class="chip" data-v="q">3/4</button>
+      <button class="chip" id="spin" aria-pressed="false">Rotation auto</button>
+      <button class="chip" id="mannequin" aria-pressed="true">Mannequin</button>
+      <button class="chip" id="wire" aria-pressed="false">Maillage</button>
+      <button class="chip" id="reset">Recentrer</button>
+    </div>
+  </main>
+  <aside class="info" id="info">
+    <h2 id="iTitle"></h2>
+    <div id="iRef" style="color:var(--muted);font-size:13px"></div>
+    <h3>Coloris</h3><div class="sw" id="sw"></div>
+    <h3>Inspecter les détails</h3><div class="hot" id="hot"></div>
+    <h3>Fiche</h3><dl class="kv" id="kv"></dl>
+    <h3>Graphismes &amp; placements</h3><ul class="arts" id="arts"></ul>
+    <div class="note" id="note"></div>
+  </aside>
+</div>
+
+<script type="importmap">
+{ "imports": { "three": "./vendor/three/build/three.module.js", "three/addons/": "./vendor/three/examples/jsm/" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const $ = s => document.querySelector(s);
+const canvas = $('#c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: false });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.NeutralToneMapping;
+renderer.toneMappingExposure = 1.0;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+const camera = new THREE.PerspectiveCamera(30, 1, 0.05, 40);
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true; controls.dampingFactor = 0.08; controls.minDistance = 0.25; controls.maxDistance = 6;
+controls.maxPolarAngle = Math.PI * 0.62;
+
+const key = new THREE.DirectionalLight(0xfff3e6, 2.2); key.position.set(-2.4, 3.4, 3.2); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); key.shadow.camera.left = -1.6; key.shadow.camera.right = 1.6; key.shadow.camera.top = 2.2; key.shadow.camera.bottom = -0.5; key.shadow.bias = -0.0004;
+scene.add(key);
+const fill = new THREE.DirectionalLight(0xdfe9ff, 0.7); fill.position.set(3, 1.6, 2.4); scene.add(fill);
+const rim = new THREE.DirectionalLight(0xffffff, 1.0); rim.position.set(0.6, 2.4, -3); scene.add(rim);
+const floor = new THREE.Mesh(new THREE.CircleGeometry(2.4, 64), new THREE.ShadowMaterial({ opacity: 0.28 }));
+floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+
+let DATA = null, cur = null, model = null, curCw = null, flyTo = null;
+const loader = new GLTFLoader();
+const texLoader = new THREE.TextureLoader();
+const KINDS = { tee: 'T-shirts', hoodie: 'Hoodies', jacket: 'Vestes', vest: 'Gilets', scarf: 'Écharpes', cap: 'Accessoires', beanie: 'Accessoires', tote: 'Accessoires', patch: 'Accessoires', label: 'Accessoires' };
+
+function resize() {
+  const m = canvas.parentElement, w = m.clientWidth, h = m.clientHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize);
+
+// blender (x, y, z) -> three (x, z, -y)
+const B2T = p => new THREE.Vector3(p[0], p[2], -p[1]);
+
+function setView(name, animate = true) {
+  const v = cur.views[name] || cur.views.front;
+  const target = B2T(v.target);
+  const az = THREE.MathUtils.degToRad(v.yaw);
+  const pos = target.clone().add(new THREE.Vector3(Math.sin(az) * v.dist, v.up ?? 0.05, Math.cos(az) * v.dist));
+  flyTo = { t: 0, p0: camera.position.clone(), t0: controls.target.clone(), p1: pos, t1: target, dur: animate ? 0.9 : 0.01 };
+}
+function easeInOut(t) { return t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+
+function clearModel() {
+  if (!model) return;
+  scene.remove(model);
+  model.traverse(o => { if (o.isMesh) { o.geometry.dispose(); const ms = Array.isArray(o.material) ? o.material : [o.material]; ms.forEach(m => { ['map', 'normalMap', 'roughnessMap', 'metalnessMap'].forEach(k => m[k]?.dispose()); m.dispose(); }); } });
+  model = null;
+}
+
+async function loadItem(it, cwKey) {
+  cur = it; $('#loading').style.display = 'grid';
+  history.replaceState(null, '', '#' + it.id);
+  document.querySelectorAll('.card').forEach(c => c.setAttribute('aria-current', c.dataset.id === it.id ? 'true' : 'false'));
+  $('#tName').textContent = it.name; $('#tSub').textContent = it.title;
+  $('#iTitle').textContent = it.name + ' · ' + it.title;
+  $('#iRef').textContent = it.id + (it.refs?.length ? ' — inspiré de ' + it.refs.join(', ') : '');
+  const kv = $('#kv'); kv.innerHTML = '';
+  [['Matière', it.fabric], ['Grammage', it.gsm], ['Coloris', it.colorways.map(c => c.label).join(' · ')], ['Fabrication', it.make]].filter(r => r[1]).forEach(([k, v]) => { const dt = document.createElement('dt'); dt.textContent = k; const dd = document.createElement('dd'); dd.textContent = v; kv.append(dt, dd); });
+  $('#arts').innerHTML = (it.art || []).map(a => `<li>${a}</li>`).join('');
+  $('#note').textContent = it.note || '';
+  const sw = $('#sw'); sw.innerHTML = '';
+  it.colorways.forEach(c => { const b = document.createElement('button'); b.dataset.key = c.key; b.setAttribute('aria-pressed', 'false'); b.innerHTML = `<i style="background:${c.hex}"></i>${c.label}`; b.onclick = () => setColorway(c.key); sw.append(b); });
+  const hot = $('#hot'); hot.innerHTML = '';
+  (it.hotspots || []).forEach(h => { const b = document.createElement('button'); b.className = 'chip'; b.textContent = h.label; b.onclick = () => focusHot(h); hot.append(b); });
+  clearModel();
+  const gltf = await loader.loadAsync(it.glb);
+  model = gltf.scene;
+  model.traverse(o => {
+    if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; const ms = Array.isArray(o.material) ? o.material : [o.material]; ms.forEach(m => { m.side = THREE.DoubleSide; if (m.map) m.map.anisotropy = 8; if (m.normalMap) m.normalMap.anisotropy = 8; }); }
+  });
+  scene.add(model);
+  curCw = null; applyToggles();
+  await setColorway(cwKey || it.colorways[0].key, true);
+  setView('front', false);
+  $('#loading').style.display = 'none';
+}
+
+async function setColorway(k, initial = false) {
+  if (!cur || (k === curCw && !initial)) return;
+  curCw = k;
+  document.querySelectorAll('#sw button').forEach(b => b.setAttribute('aria-pressed', b.dataset.key === k ? 'true' : 'false'));
+  const isDefault = k === cur.colorways[0].key;
+  if (isDefault) return;                       // GLB already carries the default colourway
+  const jobs = [];
+  model.traverse(o => {
+    if (!o.isMesh) return;
+    const tk = o.userData?.gl_texkey ?? o.parent?.userData?.gl_texkey;
+    if (tk === undefined) return;
+    jobs.push(texLoader.loadAsync(`${cur.assets}/${k}${tk}_albedo.jpg`).then(t => { t.flipY = false; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; const m = o.material; m.map = t; m.needsUpdate = true; }).catch(() => {}));
+  });
+  await Promise.all(jobs);
+}
+
+function focusHot(h) {
+  const target = B2T(h.pos);
+  const az = THREE.MathUtils.degToRad(h.yaw ?? 0);
+  const pos = target.clone().add(new THREE.Vector3(Math.sin(az) * h.dist, 0.02, Math.cos(az) * h.dist));
+  flyTo = { t: 0, p0: camera.position.clone(), t0: controls.target.clone(), p1: pos, t1: target, dur: 1.0 };
+}
+
+function applyToggles() {
+  if (!model) return;
+  const mq = $('#mannequin').getAttribute('aria-pressed') === 'true';
+  const wf = $('#wire').getAttribute('aria-pressed') === 'true';
+  model.traverse(o => {
+    if (!o.isMesh) return;
+    if (/^(Mannequin|Trousers)/.test(o.name)) o.visible = mq;
+    const ms = Array.isArray(o.material) ? o.material : [o.material]; ms.forEach(m => m.wireframe = wf);
+  });
+}
+['mannequin', 'wire', 'spin'].forEach(id => { const b = $('#' + id); b.addEventListener('click', () => { b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'); applyToggles(); controls.autoRotate = $('#spin').getAttribute('aria-pressed') === 'true'; }); });
+$('#reset').onclick = () => setView('front');
+document.querySelectorAll('[data-v]').forEach(b => b.onclick = () => setView(b.dataset.v));
+$('#themeBtn').onclick = () => { const r = document.documentElement; const l = r.dataset.theme === 'light'; r.dataset.theme = l ? '' : 'light'; $('#themeBtn').setAttribute('aria-pressed', String(!l)); };
+addEventListener('keydown', e => {
+  if (!cur) return;
+  if (e.key === '1') setView('front'); if (e.key === '2') setView('back'); if (e.key === '3') setView('q');
+  const i = DATA.items.indexOf(cur);
+  if (e.key === 'ArrowRight') loadItem(DATA.items[(i + 1) % DATA.items.length]);
+  if (e.key === 'ArrowLeft') loadItem(DATA.items[(i - 1 + DATA.items.length) % DATA.items.length]);
+});
+
+const clock = new THREE.Clock();
+function tick() {
+  const dt = clock.getDelta();
+  if (flyTo) {
+    flyTo.t += dt / flyTo.dur; const k = easeInOut(Math.min(1, flyTo.t));
+    camera.position.lerpVectors(flyTo.p0, flyTo.p1, k); controls.target.lerpVectors(flyTo.t0, flyTo.t1, k);
+    if (flyTo.t >= 1) flyTo = null;
+  }
+  controls.update(); renderer.render(scene, camera); requestAnimationFrame(tick);
+}
+
+async function main() {
+  resize();
+  try { DATA = await (await fetch('./items.json')).json(); }
+  catch (e) { $('#loading').textContent = 'Ouvrir via un serveur HTTP (python3 -m http.server)'; return; }
+  const list = $('#list'); let last = '';
+  DATA.items.forEach(it => {
+    const g = KINDS[it.kind] || 'Autres';
+    if (g !== last) { const h = document.createElement('div'); h.className = 'group'; h.textContent = g; list.append(h); last = g; }
+    const b = document.createElement('button'); b.className = 'card'; b.dataset.id = it.id;
+    b.innerHTML = `<span class="id">${it.id}</span><span><div class="t">${it.name}</div><div class="s">${it.title}</div></span>`;
+    b.onclick = () => loadItem(it); list.append(b);
+  });
+  const start = DATA.items.find(i => '#' + i.id === location.hash) || DATA.items[0];
+  tick(); await loadItem(start);
+}
+main();
+</script>
+</body>
+</html>

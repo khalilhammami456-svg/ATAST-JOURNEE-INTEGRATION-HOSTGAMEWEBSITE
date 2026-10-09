@@ -208,7 +208,8 @@ def hood_tex(man_hood, colorway="rose", out="h1s", motto=True, rib=False):
     """Texture set for the hood object (own atlas): fabric + lining-side motto embroidery."""
     P = dict(PAL)
     cwd = {"rose": dict(fabric=P["rose"], thread=P["chalk"]), "chalk": dict(fabric="#EFEBE2", thread=P["nuit"]),
-           "nuit": dict(fabric="#0F1730", thread=P["rose"])}[colorway]
+           "nuit": dict(fabric="#0F1730", thread=P["rose"]), "lab": dict(fabric="#8E959E", thread=P["chalk"]),
+           "maroon": dict(fabric="#5C1526", thread=P["chalk"]), "violet": dict(fabric="#4B36B8", thread=P["chalk"])}[colorway]
     A = Atlas(man_hood, size=2048)
     A.fabric(hex2rgb(cwd["fabric"]), rough=0.94, grain=0.07, nap=0.6)
     if motto:

@@ -26,7 +26,7 @@ CHROME = "/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_sh
 
 
 from collections import namedtuple
-Sprite = namedtuple('Sprite', 'rgba x0 y0')
+Sprite = namedtuple('Sprite', 'rgba x0 y0 meta', defaults=(None,))
 
 
 def hex2rgb(h):
@@ -120,6 +120,7 @@ class Atlas:
         self.met = np.zeros((N, N), np.float32)
         self.mask = np.zeros((N, N), bool)            # inside any piece
         self.rng = np.random.default_rng(seed)
+        self.log = []                                  # placement log (piece, kind, centre, size) for the technical flats
         self.piece_mask = {}
         self._build_piece_masks()
 
@@ -165,16 +166,52 @@ class Atlas:
             self.piece_mask[name] = m
             self.mask |= m
 
+    def tag_mask(self, tag, pieces=None):
+        """Boolean atlas mask of the faces tagged `tag` ('hem', 'collar', 'cuff') in the manifest (exact UV polygons)."""
+        from PIL import ImageDraw
+        img = Image.new("L", (self.size, self.size), 0)
+        d = ImageDraw.Draw(img)
+        for name in (pieces or list(self.man["pieces"])):
+            pl, tg = self.man.get("polys", {}).get(name, []), self.man.get("ptags", {}).get(name, [])
+            for poly, t in zip(pl, tg):
+                if t == tag:
+                    d.polygon([self.px(name, x, z) for x, z in poly], fill=255)
+        m = np.asarray(img) > 127
+        return ndi.binary_dilation(m, iterations=2) & self.mask
+
+    def piece_mask_of(self, *names):
+        m = np.zeros((self.size, self.size), bool)
+        for n in names:
+            m |= self.piece_mask[n]
+        return m
+
     # ---- base fabric
-    def fabric(self, rgb, rough=0.92, grain=0.06, nap=0.35, tint_var=0.035, name_filter=None):
+    def fabric(self, rgb, rough=0.92, grain=0.06, nap=0.35, tint_var=0.035, name_filter=None, kind=None, mask=None):
         N = self.size
         n1 = fbm(N, N, self.rng, scales=(96, 40, 16, 6, 3), weights=(0.5, 0.7, 0.8, 0.9, 1.0))
         n2 = self.rng.random((N, N)).astype(np.float32)
         lin = srgb2lin(rgb)
+        if kind == "leather":                      # grain: small irregular cells
+            c = fbm(N, N, self.rng, scales=(7, 4, 2), weights=(1, 1, 1))
+            cells = np.abs(np.sin(c * 40.0))
+            n2 = 0.5 + 0.5 * cells
+            grain, nap, rough = 0.18, 0.5, 0.46
+        elif kind == "nylon":                      # ripstop grid every 5 mm, very smooth
+            yy, xx = np.mgrid[0:N, 0:N].astype(np.float32)
+            g = ((xx % (self.ppm * 0.005) < 1.6) | (yy % (self.ppm * 0.005) < 1.6)).astype(np.float32)
+            n2 = 0.5 + g * 0.5
+            grain, nap, rough, tint_var = 0.05, 0.1, 0.34, 0.02
+        elif kind == "melton":
+            grain, nap, rough = 0.10, 0.8, 0.96
+        elif kind == "jersey":
+            grain, nap, rough = 0.05, 0.25, 0.86
         v = 1.0 + (n1 - 0.5) * 2 * tint_var + (n2 - 0.5) * grain
-        self.alb[:] = lin[None, None, :] * v[..., None]
-        self.hgt[:] = ((n1 - 0.5) * 0.0004 + (n2 - 0.5) * 0.00025) * nap
-        self.rgh[:] = rough
+        col = lin[None, None, :] * v[..., None]
+        h = ((n1 - 0.5) * 0.0004 + (n2 - 0.5) * 0.00025) * nap
+        if mask is None:
+            self.alb[:] = col; self.hgt[:] = h; self.rgh[:] = rough
+        else:
+            self.alb = np.where(mask[..., None], col, self.alb); self.hgt = np.where(mask, h, self.hgt); self.rgh = np.where(mask, rough, self.rgh)
         return self
 
     def zone(self, piece, x0, z0, x1, z1):
@@ -236,7 +273,12 @@ class Atlas:
         arr = arr[ys0:ye, xs0:xe].copy()
         x0, y0 = max(x0, 0), max(y0, 0)
         arr[..., 3] *= self.piece_mask[piece][y0:y0 + arr.shape[0], x0:x0 + arr.shape[1]]
-        return Sprite(arr, x0, y0)
+        return Sprite(arr, x0, y0, dict(piece=piece, x=round(float(x), 4), z=round(float(z), 4), w=round(float(width_m), 4),
+                                         h=round(float(width_m * vh / vw), 4), rot=float(rot), mirror=bool(mirror)))
+
+    def _rec(self, sp, kind, **kw):
+        if sp is not None and getattr(sp, "meta", None):
+            self.log.append(dict(sp.meta, kind=kind, **kw))
 
     # ---- surfaces
     def _win(self, sp, pad=6):
@@ -249,6 +291,7 @@ class Atlas:
 
     def print_(self, sp, rough=0.62, relief_m=0.00025, crackle=0.0, opacity=1.0, tint=None):
         """Flat plastisol/DTF print: composite colour, thin relief, optional crackle."""
+        self._rec(sp, "print")
         sl, L = self._win(sp)
         a = L[..., 3] * opacity
         if crackle > 0:
@@ -265,6 +308,7 @@ class Atlas:
     def emb(self, sp, thread_angle_deg=35.0, pitch_m=0.0007, pillow_m=0.0007, relief_m=0.0012,
             rough=0.42, sheen=0.25, shade=0.35):
         """Satin-stitch embroidery relief: padded pillow + thread hatch (cropped to the sprite window)."""
+        self._rec(sp, "embroidery", pitch_m=pitch_m)
         sl, L = self._win(sp, pad=12)
         a = L[..., 3]
         solid = a > 0.5
@@ -288,6 +332,7 @@ class Atlas:
 
     def weave(self, sp, pitch_m=0.00055, rough=0.7, relief_m=0.0007):
         """Woven (damask) patch / label: fine twill weave, flat colour from the sprite."""
+        self._rec(sp, "woven")
         sl, L = self._win(sp, pad=8)
         a = L[..., 3]
         solid = a > 0.5
@@ -300,6 +345,56 @@ class Atlas:
         self.alb[sl] = self.alb[sl] * (1 - al[..., None]) + rgb * al[..., None]
         self.hgt[sl] = np.where(solid, np.maximum(self.hgt[sl], relief_m * (0.6 + 0.4 * tw)), self.hgt[sl])
         self.rgh[sl] = self.rgh[sl] * (1 - al) + rough * al
+
+    def quilt(self, mask, pitch_m=0.078, seam_m=0.004, puff_m=0.006, vertical=False, rgb_seam=None):
+        """Horizontal baffles: pillow height between stitched channels (puffer)."""
+        rows = np.where(mask.any(axis=1))[0]; cols = np.where(mask.any(axis=0))[0]
+        if len(rows) == 0:
+            return
+        sl = (slice(rows[0], rows[-1] + 1), slice(cols[0], cols[-1] + 1))
+        m = mask[sl]
+        yy, xx = np.mgrid[sl[0], sl[1]].astype(np.float32)
+        coord = (xx if vertical else yy) / (self.ppm * pitch_m)
+        ph = coord % 1.0
+        pill = np.sin(np.clip(ph, 0, 1) * math.pi) ** 0.7              # 0 at the seam, 1 mid-baffle
+        self.hgt[sl] = np.where(m, pill * puff_m, self.hgt[sl])
+        shade = 0.82 + 0.18 * pill
+        self.alb[sl] = np.where(m[..., None], self.alb[sl] * shade[..., None], self.alb[sl])
+        self.ao[sl] = np.where(m, 0.78 + 0.22 * pill, self.ao[sl])
+
+    def band(self, mask, z0, z1, piece_names, rgb, rough=None):
+        """Flat colour band between world heights z0..z1 on the given pieces, restricted to `mask`."""
+        m = np.zeros((self.size, self.size), bool)
+        for n in piece_names:
+            m |= self.zone(n, -9, z0, 9, z1)
+        m &= mask
+        if isinstance(rgb, str):
+            rgb = hex2rgb(rgb)
+        lin = srgb2lin(rgb)
+        self.alb = np.where(m[..., None], lin[None, None, :] * (0.94 + 0.06 * self.rng.random((self.size, self.size, 1)).astype(np.float32)), self.alb)
+        if rough is not None:
+            self.rgh = np.where(m, rough, self.rgh)
+
+    def tile_strip(self, piece, svg_text, x0, x1, z0, z1, cell_m, rot=0.0):
+        """Tile an SVG cell over the rectangle (piece-local metres) [x0,x1] x [z0,z1] (seamless repeat); returns a Sprite."""
+        import re
+        m = re.search(r"""viewBox=["']0 0 ([\d.]+) ([\d.]+)["']""", svg_text)
+        vw, vh = float(m.group(1)), float(m.group(2))
+        cw = max(8, int(round(cell_m * self.ppm))); ch = max(8, int(round(cw * vh / vw)))
+        cell = rasterize_svg(svg_text, cw, ch)
+        ua, va = self.px(piece, min(x0, x1), max(z0, z1))
+        ub, vb = self.px(piece, max(x0, x1), min(z0, z1))
+        W, H = int(abs(ub - ua)), int(abs(vb - va))
+        if W < 4 or H < 4:
+            return Sprite(np.zeros((1, 1, 4), np.float32), 0, 0)
+        reps = (H // ch + 1, W // cw + 1, 1)
+        big = np.tile(cell, reps)[:H, :W].copy()
+        x0p, y0p = int(min(ua, ub)), int(min(va, vb))
+        N = self.size
+        ye, xe = min(H, N - y0p), min(W, N - x0p)
+        big = big[:ye, :xe]
+        big[..., 3] *= self.piece_mask[piece][y0p:y0p + ye, x0p:x0p + xe]
+        return Sprite(big, x0p, y0p, dict(piece=piece, x=round((x0 + x1) / 2, 4), z=round((z0 + z1) / 2, 4), w=round(abs(x1 - x0), 4), h=round(abs(z1 - z0), 4), rot=float(rot), mirror=False))
 
     def stitch_line(self, piece, pts, rgb, gauge_m=0.003, width_m=0.0006, offset_m=0.0, dash=True):
         """Topstitch along a polyline given in piece-local metres (cropped window)."""
@@ -346,6 +441,7 @@ class Atlas:
         n = normal_from_height(ndi.gaussian_filter(hgt, 0.35), 1.0, self.ppm)
         Image.fromarray((lin2srgb(alb) * 255 + 0.5).astype(np.uint8)).save(outdir / (name + "_albedo.png"))
         Image.fromarray(pack_normal(n)).save(outdir / (name + "_normal.png"))
+        json.dump(self.log, open(outdir / (name + "_placements.json"), "w"), indent=1)
         orm = np.stack([ao, rgh, self.met[idx[0], idx[1]]], -1)
         Image.fromarray((orm.clip(0, 1) * 255 + 0.5).astype(np.uint8)).save(outdir / (name + "_orm.png"))
         return dict(albedo=name + "_albedo.png", normal=name + "_normal.png", orm=name + "_orm.png")

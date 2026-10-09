@@ -1,0 +1,38 @@
+{
+ "Nuit": {
+  "hex": "#0B1226",
+  "use": "navy / near-black: grounds, trousers, text on light"
+ },
+ "Encre": {
+  "hex": "#06080F",
+  "use": "ink black: deepest shadows, line art"
+ },
+ "Chalk": {
+  "hex": "#F1EEE7",
+  "use": "chalk white: text on dark, tiles, rib trim"
+ },
+ "Lab gray": {
+  "hex": "#8E959E",
+  "use": "pullover, coach jacket, puffer"
+ },
+ "Dusty rose": {
+  "hex": "#D9A3A8",
+  "use": "hero fleece, varsity sleeves"
+ },
+ "Maroon": {
+  "hex": "#5C1526",
+  "use": "alternate grounds, borders"
+ },
+ "Cosmic violet": {
+  "hex": "#6B4EF5",
+  "use": "accent only"
+ },
+ "Electric blue": {
+  "hex": "#2E7BFF",
+  "use": "accent only"
+ },
+ "Tunisian red": {
+  "hex": "#C8102E",
+  "use": "controlled accent — tiny details only"
+ }
+}

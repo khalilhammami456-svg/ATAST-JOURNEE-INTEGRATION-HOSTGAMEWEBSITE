@@ -20,11 +20,11 @@ def small(prefix, kind):
     dst = f"{tmp}/{prefix}_{kind}." + ("jpg" if kind == "albedo" else "png")
     im.save(dst, quality=90) if dst.endswith("jpg") else im.save(dst)
     return dst
-g = gl.garment()
-materials.apply_all(g, materials.export_material("fabric_" + cw, small(cw, "albedo"), small(cw, "normal"), small(cw, "orm")))
-hood = bpy.data.objects.get("CD_Hood")
-if hood:
-    materials.apply_all(hood, materials.export_material("hood_" + cw, small(cw + "_hood", "albedo"), small(cw + "_hood", "normal"), small(cw + "_hood", "orm")))
+for o in bpy.data.objects:
+    if "gl_texkey" in o.keys():
+        key = cw + o["gl_texkey"]
+        if small(key, "albedo"):
+            materials.apply_all(o, materials.export_material("m_" + o.name + "_" + cw, small(key, "albedo"), small(key, "normal"), small(key, "orm")))
 for o in bpy.data.objects:
     if o.name == "CD_Man_Body":
         o.hide_set(True); o.hide_render = True
@@ -36,5 +36,5 @@ for o in bpy.data.objects:
     if o.type in ("MESH", "CURVE") and not o.name.startswith(("CD_Man_Body", "cyclorama")) and o.visible_get():
         o.select_set(True)
 bpy.ops.export_scene.gltf(filepath=E("OUT"), export_format='GLB', use_selection=True, export_apply=True, export_image_format='AUTO',
-                          export_yup=True, export_texcoords=True, export_normals=True, export_materials='EXPORT')
+                          export_yup=True, export_texcoords=True, export_normals=True, export_materials='EXPORT', export_extras=True)
 print("glb", os.path.getsize(E("OUT")) / 1e6, "MB")

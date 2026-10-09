@@ -334,11 +334,15 @@ def woven_label_svg(P, bg=None, ink=None, lines=("BAC SCIENCES", "2027"), W=1000
     out = [f'<rect width="{W}" height="{H}" rx="14" fill="{bg}"/>']
     out.append(f'<rect x="10" y="10" width="{W-20}" height="{H-20}" rx="8" fill="none" stroke="{ink}" stroke-opacity=".55" stroke-width="3"/>')
     size = H * 0.36
-    w1 = text_w(lines[0], "archivo", size, 200, wdth=110, wght=700)
-    w2 = text_w(lines[1], "archivo", size, 120, wdth=110, wght=700)
-    gap = size * 0.9
-    tot = w1 + gap + w2
-    x0 = W * 0.56 - tot / 2
+    for _ in range(3):                                  # fit the type into the free width (peaks mark takes the left 16 %)
+        w1 = text_w(lines[0], "archivo", size, 200, wdth=110, wght=700)
+        w2 = text_w(lines[1], "archivo", size, 120, wdth=110, wght=700)
+        gap = size * 0.9
+        tot = w1 + gap + w2
+        if tot <= W * 0.78:
+            break
+        size *= W * 0.76 / tot
+    x0 = W * 0.58 - tot / 2
     out.append(T(lines[0], "archivo", size, x0, H * 0.64, ink, "start", tracking=200, wdth=110, wght=700))
     out.append(T(lines[1], "archivo", size, x0 + w1 + gap, H * 0.64, accent, "start", tracking=120, wdth=110, wght=700))
     out.append(ID.peaks(W * 0.045, H * 0.78, W * 0.11, H * 0.40, n=3, fill=accent, sw=7))
@@ -386,3 +390,113 @@ if __name__ == "__main__":
         bg = P["nuit"]
         render(out / f"{k}.svg", png=out / f"{k}.png", scale=1.0, bg="transparent")
     print("ok")
+
+
+# ============================================================================== additional pieces (3D phase 2)
+
+def dna_frag(P, H=1000, turns=3.0, amp=110, strand=None, rung_cols=None, letters=False, stroke=18, bases=None, back=None):
+    """DNA helix as an SVG fragment: returns (body, W, H)."""
+    full = dna_svg(P, H=H, turns=turns, amp=amp, strand=strand, rung_cols=rung_cols, letters=letters, stroke=stroke, bases=bases, back=back)
+    import re
+    m = re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', full)
+    body = full[full.index("</defs>") + 7:full.rindex("</svg>")]
+    return body, float(m.group(1)), float(m.group(2))
+
+
+def dna_tall_svg(P, ink=None, H=1000, strand=None, letters=True, bases=None, tagline=None, tag_col=None):
+    """Clean back print: DNA helix with an optional tagline underneath (ref 4: 'born unique' minimal back print)."""
+    body, W, Hh = dna_frag(P, H=H, strand=strand or (ink or P["chalk"]), letters=letters, bases=bases)
+    out = body
+    height = Hh
+    if tagline:
+        tw = text_w(tagline, "mono", Hh * 0.034, 380, wght=500) + 20
+        Wn = max(W, tw)
+        out = f'<g transform="translate({(Wn - W)/2:.1f} 0)">{out}</g>'
+        out += T(tagline, "mono", Hh * 0.034, Wn / 2, Hh + Hh * 0.06, tag_col or (ink or P["chalk"]), "middle", tracking=380, wght=500)
+        height = Hh + Hh * 0.10
+        W = Wn
+    return svg(W, height, out)
+
+
+def varsity_text_svg(P, text="SCIENCES", fill=None, outline=None, size=170, arc=0, ow=12, key="grad"):
+    """Collegiate block lettering (Graduate), flat or arched, with a contrasting outline (stroke under fill)."""
+    fill = fill or P["chalk"]; outline = outline or P["nuit"]
+    if arc:
+        R = arc
+        W = 2 * R + 2 * size * 0.8
+        body = T_arc(text, key, size, R + size * 0.8, R + size * 0.8, R, -90, fill, tracking=40)
+        # outline copy first
+        body_o = body.replace(f'fill="{fill}"', f'fill="{outline}" stroke="{outline}" stroke-width="{ow*2}" stroke-linejoin="round"')
+        return svg(W, R * 0.95, body_o + body)
+    w = text_w(text, key, size, 40)
+    pad = ow * 3
+    d, _ = text_d(text, key, size, pad, size * 0.95, "start", 40)
+    body = (f'<path d="{d}" fill="{outline}" stroke="{outline}" stroke-width="{ow*2}" stroke-linejoin="round"/>'
+            f'<path d="{d}" fill="{fill}"/>')
+    return svg(w + 2 * pad, size * 1.15 + pad, body)
+
+
+def chenille_letter_svg(P, letter="H", fill=None, border=None, size=520):
+    """Chenille-style varsity letter: thick fill with a contrasting felt border (one raised look when composited)."""
+    fill = fill or P["rose"]; border = border or P["chalk"]
+    d, w = text_d(letter, "grad", size, size * 0.1, size * 0.9, "start", 0)
+    body = (f'<path d="{d}" fill="{border}" stroke="{border}" stroke-width="{size*0.085}" stroke-linejoin="round"/>'
+            f'<path d="{d}" fill="{fill}" stroke="{fill}" stroke-width="{size*0.02}" stroke-linejoin="round"/>')
+    return svg(w + size * 0.3, size * 1.05, body)
+
+
+def badge_svg(P, kind="phys", ring=None, fill=None, ink=None, R=160):
+    """Round varsity badge: ring + arc text + icon (orbit atom / benzene ring / DNA mini)."""
+    ring = ring or P["chalk"]; fill = fill or P["nuit"]; ink = ink or P["chalk"]
+    c = R + 8
+    out = [f'<circle cx="{c}" cy="{c}" r="{R}" fill="{fill}" stroke="{ring}" stroke-width="{R*0.07}"/>']
+    out.append(f'<circle cx="{c}" cy="{c}" r="{R*0.62}" fill="none" stroke="{ring}" stroke-width="{R*0.025}"/>')
+    label = {"phys": "PHYSIQUE", "chem": "CHIMIE", "svt": "SVT"}[kind]
+    out.append(T_arc(label, "archivo", R * 0.19, c, c, R * 0.80, -90, ink, tracking=220, wdth=110, wght=700))
+    if kind == "phys":
+        for a in (0, 60, 120):
+            out.append(f'<ellipse cx="{c}" cy="{c}" rx="{R*0.46}" ry="{R*0.16}" transform="rotate({a} {c} {c})" fill="none" stroke="{ink}" stroke-width="{R*0.03}"/>')
+        out.append(f'<circle cx="{c}" cy="{c}" r="{R*0.07}" fill="{ink}"/>')
+    elif kind == "chem":
+        pts = [(c + R * 0.36 * math.cos(math.radians(60 * i - 90)), c + R * 0.36 * math.sin(math.radians(60 * i - 90))) for i in range(6)]
+        out.append('<path d="M' + " L".join(f"{x:.1f} {y:.1f}" for x, y in pts) + f' Z" fill="none" stroke="{ink}" stroke-width="{R*0.035}" stroke-linejoin="round"/>')
+        for i in (0, 2, 4):                                  # alternating double bonds (Kekulé benzene)
+            (x0, y0), (x1, y1) = pts[i], pts[i + 1]
+            mx, my = (x0 + x1) / 2, (y0 + y1) / 2
+            dx, dy = (c - mx) * 0.22, (c - my) * 0.22
+            out.append(f'<path d="M{x0+dx+(x1-x0)*0.15:.1f} {y0+dy+(y1-y0)*0.15:.1f} L{x1+dx-(x1-x0)*0.15:.1f} {y1+dy-(y1-y0)*0.15:.1f}" stroke="{ink}" stroke-width="{R*0.03}" stroke-linecap="round"/>')
+    else:
+        body, W, Hh = dna_frag(P, H=400, turns=1.6, amp=48, strand=ink, rung_cols={"A": ink, "T": ink, "G": ink, "C": ink}, letters=False, stroke=9, bases="ATGCAT", back=ink)
+        k = R * 1.05 / Hh
+        out.append(f'<g transform="translate({c - W*k/2:.1f} {c - Hh*k/2 + R*0.04:.1f}) scale({k:.3f})">{body}</g>')
+    return svg(2 * c, 2 * c, "".join(out))
+
+
+def collage_svg(P, ink=None, accent=None, bg=None, W=1100):
+    """Back collage (ref 3 inspiration, original): arched SCIENCES, DNA + Surus roundel + Arabic calligraphy, 2027, badges."""
+    ink = ink or P["chalk"]; accent = accent or P["rose"]; bg = bg or P["nuit"]
+    cx, cy = W / 2, 500
+    out = []
+    arc = T_arc("SCIENCES", "grad", 150, cx, cy, 395, -90, ink, tracking=60)
+    out.append(arc.replace(f'fill="{ink}"', f'fill="{bg}" stroke="{bg}" stroke-width="20" stroke-linejoin="round"'))
+    out.append(arc)
+    out.append(f'<circle cx="{cx}" cy="{cy+20}" r="190" fill="none" stroke="{ink}" stroke-width="10"/>')
+    out.append(f'<circle cx="{cx}" cy="{cy+20}" r="172" fill="none" stroke="{ink}" stroke-width="3" stroke-dasharray="2 9"/>')
+    out.append(ID.surus(ink, accent, x=cx - 150, y=cy - 60, scale=0.68))
+    body, dw, dh = dna_frag(P, H=560, turns=2.2, amp=62, strand=ink, rung_cols={"A": accent, "T": ink, "G": P["blue"], "C": P["violet"]}, letters=False, stroke=12, back=P["lab"])
+    out.append(f'<g transform="translate({120 - dw/2:.1f} {270})">{body}</g>')
+    out.append(T("علوم", "aref", 170, 935, cy + 70, accent, "middle"))
+    out.append(f'<path d="M800 {cy+110} H1070" stroke="{accent}" stroke-width="6" stroke-linecap="round"/>')
+    out.append(T("SCIENCES", "mono", 17, 935, cy + 142, ink, "middle", tracking=300, wght=500))
+    n, nw, nh = ID.numerals(190, ink, cx, 900, tracking=40, anchor="middle")
+    out.append(n)
+    for i, kind in enumerate(("phys", "chem", "svt")):
+        s = badge_svg(P, kind, ring=ink, fill=bg, ink=ink, R=78)
+        body = s[s.index("</defs>") + 7:s.rindex("</svg>")]
+        out.append(f'<g transform="translate({cx - 270 + i*190:.1f} 940)">{body}</g>')
+    out.append(T("LYCÉE HANNIBAL · TÉBOURBA · PROMO 2027", "mono", 24, cx, 1135, ink, "middle", tracking=240, wght=500))
+    return svg(W, 1160, "".join(out))
+
+
+def pocket_svg(P):
+    return svg(10, 10, "")

@@ -1,0 +1,18 @@
+id,name,fabric_spec,decoration_plan,trims_dt_low,trims_dt_high,blank_dt_low,blank_dt_high,setup_dt_low,setup_dt_high
+T1,T-shirt minimal premium,"Single jersey 240 gsm, 100 % organic combed cotton, garment washed","left-chest DNA 4 cm (~3,800 stitches, EST) | back DNA double helix 2 colours",0.8,1.6,11.0,21.0,120,420
+T2,T-shirt graphique audacieux,"Heavy jersey 260 gsm, 100 % cotton, boxy cut",chest tiles B·Ac·Sc·I 4 colours | back 2027 1 colour | sleeve Sc tile,0.8,1.6,12.0,23.0,150,520
+T3,T-shirt illustration scientifique,"Single jersey 220 gsm, cotton / modal 90/10","caffeine front + Punnett back, 2 colours each",0.8,1.6,11.0,21.0,130,460
+H1,Hoodie zippé oversize,"Brushed-back fleece 380 gsm (80 % cotton / 20 % polyester), rib 1x1 with 2 % elastane, YKK-type metal zip",woven crest 7 cm | sleeve script + 2027 | back tiles B·Ac·Sc·I | hem label,9.0,16.0,62.0,105.0,380,1150
+H2,Hoodie pull collégial,"Loopback french terry 340 gsm, 100 % cotton, kangaroo pocket",chest wordmark | back collage 3 colours | sleeve 2027 / HΛNNIBΛL | hem label,4.0,8.5,50.0,88.0,320,980
+H3,Hoodie technique,"Bonded tech fleece 320 gsm (poly / elastane), water-repellent face, tape-seamed",mini crest | back cosmic print 40 cm (full colour gradients) | sleeve orbit bands | violet hem label,9.0,17.0,68.0,118.0,380,1200
+J1,Varsity jacket,"Melton wool-blend body 500 gsm, faux-leather sleeves, rib collar/cuffs/hem, snap front",chest H | sleeve patches | back SCIENCES arch + crest | label,16.0,30.0,150.0,270.0,700,2100
+J2,Veste coach légère,"Nylon taffeta 70D, DWR, lightly padded none, snap front",wordmark | back molecule + formula | label,6.0,12.0,52.0,95.0,300,900
+V1,Gilet varsity,"Melton wool-blend 500 gsm, quilted lining, rib trim",chest crest | back arch SCIENCES + crest,10.0,19.0,70.0,125.0,420,1300
+V2,Gilet de superposition,"Quilted ripstop 30D, recycled fill 80 g, funnel collar, zip",back orbit tone-on-tone | label,7.0,14.0,46.0,82.0,260,800
+S1,Écharpe motif orbites,"Brushed wool-blend jacquard 180 x 32 cm, chalk contrast ends",all-over orbit jacquard + contrast ends,1.0,2.0,22.0,48.0,350,1600
+S2,Écharpe minimale bordée,"Merino-viscose knit 200 x 28 cm, jacquard border",typographic border jacquard | end monogram,1.0,2.0,18.0,40.0,280,1200
+A1,Casquette 6 panneaux,"Cotton twill 8 oz, metal-eyelets, strap-back",front monogram | back 2027,1.5,3.5,8.0,17.0,180,520
+A2,Bonnet côtelé,"Rib-knit merino/acrylic, folded cuff, woven tab",woven tab,0.8,1.6,7.0,15.0,90,300
+A3,Tote bag,"Canvas 12 oz cotton, 40 x 38 cm, 70 cm handles",caffeine centre 2 colours | back crest,0.8,1.8,5.0,12.0,80,260
+A4,Écusson brodé / tissé,"Merrowed-border twill, 80 mm, heat-seal backing",80 mm merrow-border patch,0.3,0.8,0.0,0.0,100,360
+A5,Étiquette tissée,"Damask woven polyester, 60 x 12 mm, end-fold",60 x 12 mm damask label,0.2,0.5,0.0,0.0,60,220
