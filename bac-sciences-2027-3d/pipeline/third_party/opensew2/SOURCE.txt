@@ -1,0 +1,1 @@
+Source: https://github.com/MarcelloMorettoni/opensew-2 (main branch, fetched 2026-10-09); GPL-3.0-or-later; avatars CC0
