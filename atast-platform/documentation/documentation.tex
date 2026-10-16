@@ -1,0 +1,1609 @@
+% ============================================================
+% ATAST WEBSITE
+% Software Requirements Specification + Technical Design Document
+% File: documentation.tex
+% ============================================================
+\documentclass[11pt,a4paper]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+\usepackage{geometry}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\geometry{margin=2.5cm}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!60!black,
+    urlcolor=blue!60!black,
+    pdftitle={ATAST - Software Requirements Specification and Technical Design},
+    pdfauthor={ATAST}
+}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{ATAST}
+\rhead{SRS + Technical Design}
+\cfoot{\thepage}
+
+\definecolor{codebg}{RGB}{245,245,245}
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    columns=fullflexible
+}
+
+\title{\textbf{ATAST Website}\\
+Software Requirements Specification\\
+\& Technical Design Document}
+\author{ATAST -- Association Tunisienne dédiée à la Science et à la Technologie}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\listoftables
+\clearpage
+
+% ============================================================
+\chapter{Introduction}
+% ============================================================
+
+\section{Purpose}
+
+Ce document constitue le cahier des charges logiciel complet du site web officiel d'ATAST. Il combine deux dimensions :
+
+\begin{enumerate}
+    \item un \textbf{Software Requirements Specification (SRS)} décrivant ce que le système doit faire ;
+    \item un \textbf{Technical Design Document (TDD)} décrivant comment le système doit être structuré et développé.
+\end{enumerate}
+
+Le document est destiné aux développeurs frontend et backend, aux administrateurs du projet, aux designers et à toute personne chargée de maintenir ou faire évoluer la plateforme.
+
+\section{Project Vision}
+
+ATAST est une association tunisienne dédiée à la science et à la technologie. Elle cherche notamment à inspirer les jeunes, promouvoir les activités STEM et contribuer au développement de la prochaine génération de leaders scientifiques et technologiques.
+
+Le site doit donc être à la fois :
+
+\begin{itemize}
+    \item une plateforme de gestion interne du club ;
+    \item un espace communautaire pour ses membres ;
+    \item une plateforme de gestion des événements ;
+    \item un système de suivi des participations et des points ;
+    \item un canal de communication entre l'administration et les membres.
+\end{itemize}
+
+\section{Scope}
+
+Le périmètre comprend deux interfaces principales :
+
+\begin{itemize}
+    \item \textbf{Admin Interface} : administration complète des membres, demandes, événements, participations, points, messages et suggestions ;
+    \item \textbf{Member Interface} : accès aux événements, membres publics, suggestions, classement et profil personnel.
+\end{itemize}
+
+Le système doit appliquer une séparation stricte des permissions entre ces deux rôles.
+
+% ============================================================
+\chapter{Definitions and Terminology}
+% ============================================================
+
+\begin{longtable}{p{0.25\textwidth}p{0.68\textwidth}}
+\toprule
+\textbf{Terme} & \textbf{Définition}\\
+\midrule
+ATAST & Association tunisienne dédiée à la science et à la technologie.\\
+Admin & Utilisateur disposant des droits d'administration du club.\\
+Member & Membre actif du club ayant été accepté par un administrateur.\\
+Membership Request & Demande d'adhésion en attente de validation.\\
+Event & Activité organisée par ATAST.\\
+Participation & Relation entre un membre et un événement.\\
+Score / Points & Nombre de points accumulés par un membre selon ses participations validées.\\
+Member Library & Liste des membres actifs accessible à l'administration.\\
+Event Library & Bibliothèque des événements enregistrés.\\
+Message Sandbox & Espace permettant à l'administration d'envoyer des messages et de consulter les suggestions.\\
+Suggestion & Message envoyé par un membre à l'administration.\\
+Default Avatar & Image affichée lorsqu'un membre n'a pas fourni de photo.\\
+\bottomrule
+\end{longtable}
+
+% ============================================================
+\chapter{Stakeholders and User Roles}
+% ============================================================
+
+\section{Stakeholders}
+
+Les principaux acteurs sont :
+
+\begin{itemize}
+    \item administration du club ;
+    \item membres ATAST ;
+    \item équipe technique chargée du développement et de la maintenance.
+\end{itemize}
+
+\section{Roles}
+
+Le système définit deux rôles applicatifs principaux :
+
+\begin{enumerate}
+    \item \textbf{ADMIN}
+    \item \textbf{MEMBER}
+\end{enumerate}
+
+Aucun visiteur public ne doit pouvoir s'attribuer le rôle ADMIN.
+
+\section{Role Separation}
+
+Les permissions doivent être vérifiées côté serveur. Cacher un bouton dans le frontend ne constitue pas une mesure de sécurité suffisante.
+
+Un membre qui tente d'appeler directement une route réservée à l'administration doit recevoir une réponse d'autorisation appropriée, par exemple HTTP 403.
+
+% ============================================================
+\chapter{Functional Requirements}
+% ============================================================
+
+\section{FR-01 -- Registration Request}
+
+Le système doit permettre à une personne de demander son adhésion.
+
+Le formulaire contient :
+
+\begin{itemize}
+    \item nom ;
+    \item adresse email ;
+    \item mot de passe ;
+    \item confirmation du mot de passe ;
+    \item numéro de téléphone ;
+    \item bouton de soumission.
+\end{itemize}
+
+La soumission crée une \textbf{membership request} avec le statut \texttt{PENDING}.
+
+La personne n'obtient pas automatiquement le statut MEMBER.
+
+\section{FR-02 -- Membership Review}
+
+Un administrateur peut consulter les demandes en attente.
+
+Pour chaque demande, il peut :
+
+\begin{itemize}
+    \item accepter ;
+    \item rejeter.
+\end{itemize}
+
+\section{FR-03 -- Membership Acceptance}
+
+Lorsqu'une demande est acceptée :
+
+\begin{enumerate}
+    \item le compte membre est activé ;
+    \item son rôle est défini comme \texttt{MEMBER} ;
+    \item le membre peut se connecter ;
+    \item son profil devient visible selon les règles de confidentialité.
+\end{enumerate}
+
+\section{FR-04 -- Membership Rejection}
+
+Lors d'un rejet, l'administration doit pouvoir saisir un motif.
+
+Le système doit conserver l'information nécessaire au suivi du processus, tout en respectant la règle métier demandée : une demande rejetée ne doit pas devenir un compte membre actif.
+
+Si la politique de conservation impose la suppression du compte ou des données de la demande après rejet, cette suppression doit être réalisée après sauvegarde des informations d'audit strictement nécessaires.
+
+\section{FR-05 -- Member Library}
+
+L'Admin doit disposer d'une bibliothèque de tous les membres actifs.
+
+Chaque entrée doit permettre d'afficher :
+
+\begin{itemize}
+    \item photo ou avatar par défaut ;
+    \item nom ;
+    \item score ;
+    \item accès au profil détaillé.
+\end{itemize}
+
+\section{FR-06 -- Admin Member Profile}
+
+L'Admin peut consulter :
+
+\begin{itemize}
+    \item nom ;
+    \item photo ;
+    \item email ;
+    \item téléphone ;
+    \item description ;
+    \item date de naissance si fournie ;
+    \item Instagram ;
+    \item Facebook ;
+    \item GitHub ;
+    \item LinkedIn ;
+    \item événements auxquels le membre a participé ;
+    \item historique des participations ;
+    \item score total.
+\end{itemize}
+
+\section{FR-07 -- Event Creation}
+
+L'Admin peut créer un événement.
+
+Le formulaire doit permettre de définir au minimum :
+
+\begin{itemize}
+    \item titre ;
+    \item type ;
+    \item description ;
+    \item date ;
+    \item heure ;
+    \item lieu ;
+    \item image éventuelle ;
+    \item gratuit ou payant ;
+    \item prix si payant ;
+    \item informations complémentaires ;
+    \item statut.
+\end{itemize}
+
+\section{FR-08 -- Event Types}
+
+Le système doit supporter exactement les quatre types fonctionnels suivants :
+
+\begin{table}[H]
+\centering
+\caption{Types d'événements et points}
+\begin{tabular}{lll}
+\toprule
+\textbf{Type} & \textbf{Code} & \textbf{Points}\\
+\midrule
+Small Event & SMALL & 10\\
+Medium Event & MEDIUM & 20\\
+Big Event & BIG & 30\\
+Meeting & MEETING & 0\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Le type d'événement détermine automatiquement la récompense en points.
+
+\section{FR-09 -- Free and Paid Events}
+
+Chaque événement doit être soit gratuit, soit payant.
+
+Si \texttt{is\_free = true}, le prix doit être nul.
+
+Si \texttt{is\_free = false}, un prix valide doit être fourni.
+
+La devise doit être stockée explicitement afin d'éviter toute ambiguïté.
+
+\section{FR-10 -- Event Library}
+
+L'Admin peut consulter tous les événements enregistrés, y compris les événements passés et archivés selon leur statut.
+
+Les membres peuvent consulter les événements publics appropriés.
+
+\section{FR-11 -- Event Editing}
+
+L'Admin peut modifier un événement existant.
+
+La modification ne doit pas supprimer automatiquement les participations historiques.
+
+Si une modification du type change la valeur des points, le système doit recalculer les points à partir des participations validées.
+
+\section{FR-12 -- Event Removal}
+
+L'Admin peut retirer un événement.
+
+La stratégie recommandée est l'archivage logique plutôt qu'une suppression physique lorsque l'événement possède des participations ou un historique important.
+
+\section{FR-13 -- Participation Management}
+
+L'Admin peut consulter les participants d'un événement et retirer une participation.
+
+Le système doit empêcher les doublons.
+
+Une participation validée ne peut attribuer les points qu'une seule fois.
+
+\section{FR-14 -- Points}
+
+Les points sont calculés à partir des participations validées.
+
+\[
+Score(member) = \sum Points(Type(event))
+\]
+
+Exemple :
+
+\[
+2\times10 + 1\times20 + 1\times30 + 2\times0 = 70
+\]
+
+Le membre ne peut jamais modifier directement son score.
+
+\section{FR-15 -- Message Sandbox}
+
+L'Admin peut envoyer un message à tous les membres actifs.
+
+Un message contient au minimum :
+
+\begin{itemize}
+    \item titre ;
+    \item contenu ;
+    \item date ;
+    \item auteur.
+\end{itemize}
+
+\section{FR-16 -- Suggestions}
+
+Un membre peut envoyer une suggestion.
+
+Une suggestion contient :
+
+\begin{itemize}
+    \item titre facultatif ;
+    \item contenu ;
+    \item auteur ;
+    \item date ;
+    \item statut.
+\end{itemize}
+
+L'Admin peut consulter les suggestions.
+
+\section{FR-17 -- Member Home}
+
+Après connexion, le membre arrive sur la page d'accueil membre.
+
+Elle peut afficher :
+
+\begin{itemize}
+    \item identité ATAST ;
+    \item bienvenue ;
+    \item événements récents ou à venir ;
+    \item score courant ;
+    \item accès au scoreboard ;
+    \item annonces de l'administration.
+\end{itemize}
+
+\section{FR-18 -- Member Menu}
+
+Un menu est accessible via une icône située en haut à droite.
+
+Il donne accès à :
+
+\begin{itemize}
+    \item Event Library ;
+    \item Members List ;
+    \item Suggestion Box ;
+    \item Scoreboard ;
+    \item Profile ;
+    \item Logout.
+\end{itemize}
+
+\section{FR-19 -- Member List Privacy}
+
+Un membre peut consulter la liste des membres et leurs informations publiques.
+
+Il peut voir au minimum :
+
+\begin{itemize}
+    \item nom ;
+    \item photo/avatar ;
+    \item posts ou contenu public si cette fonctionnalité est implémentée.
+\end{itemize}
+
+Il ne doit pas recevoir les informations privées d'un autre membre, notamment :
+
+\begin{itemize}
+    \item email ;
+    \item téléphone ;
+    \item date de naissance ;
+    \item informations privées.
+\end{itemize}
+
+\section{FR-20 -- Member Profile}
+
+Le membre peut consulter son propre profil contenant :
+
+\begin{itemize}
+    \item photo ;
+    \item nom ;
+    \item email ;
+    \item téléphone ;
+    \item description ;
+    \item réseaux sociaux ;
+    \item anniversaire ;
+    \item score courant.
+\end{itemize}
+
+\section{FR-21 -- Profile Editing}
+
+Le membre peut modifier les informations personnelles autorisées.
+
+Il peut notamment :
+
+\begin{itemize}
+    \item changer sa photo ;
+    \item modifier son nom ;
+    \item modifier son téléphone ;
+    \item modifier sa description ;
+    \item modifier ses réseaux sociaux ;
+    \item modifier son anniversaire.
+\end{itemize}
+
+La modification du mot de passe doit utiliser une procédure sécurisée distincte.
+
+\section{FR-22 -- Social Links}
+
+Les liens suivants sont optionnels :
+
+\begin{itemize}
+    \item Instagram ;
+    \item Facebook ;
+    \item GitHub ;
+    \item LinkedIn.
+\end{itemize}
+
+Les URLs doivent être validées côté serveur.
+
+\section{FR-23 -- Profile Photo}
+
+Une photo de profil est facultative.
+
+Si elle existe, elle est affichée.
+
+Sinon, le système affiche un avatar par défaut.
+
+Les fichiers doivent être contrôlés avant stockage.
+
+\section{FR-24 -- Scoreboard}
+
+Le scoreboard est accessible aux membres et affiche les membres actifs par score décroissant.
+
+\begin{enumerate}
+    \item score le plus élevé en premier ;
+    \item score le plus faible ensuite ;
+    \item en cas d'égalité, utiliser un critère secondaire stable, par exemple le nom ou la date d'obtention du score.
+\end{enumerate}
+
+Aucun classement subjectif ou manuel ne doit être utilisé.
+
+% ============================================================
+\chapter{Non-Functional Requirements}
+% ============================================================
+
+\section{NFR-01 -- Security}
+
+Le système doit implémenter :
+
+\begin{itemize}
+    \item hachage sécurisé des mots de passe ;
+    \item contrôle d'accès par rôle ;
+    \item validation frontend et backend ;
+    \item protection contre les injections ;
+    \item protection XSS ;
+    \item protection CSRF lorsque pertinente ;
+    \item sessions sécurisées ;
+    \item HTTPS en production ;
+    \item validation des uploads ;
+    \item contrôle des permissions côté serveur.
+\end{itemize}
+
+\section{NFR-02 -- Performance}
+
+Le système doit éviter les requêtes inutiles et supporter :
+
+\begin{itemize}
+    \item pagination ;
+    \item lazy loading des images ;
+    \item optimisation des images ;
+    \item cache lorsque pertinent ;
+    \item indexation des colonnes fréquemment recherchées.
+\end{itemize}
+
+\section{NFR-03 -- Responsiveness}
+
+Le site doit fonctionner correctement sur :
+
+\begin{itemize}
+    \item desktop ;
+    \item tablette ;
+    \item mobile.
+\end{itemize}
+
+\section{NFR-04 -- Accessibility}
+
+Prévoir :
+
+\begin{itemize}
+    \item labels explicites ;
+    \item navigation clavier ;
+    \item focus visible ;
+    \item textes alternatifs ;
+    \item contraste suffisant ;
+    \item messages d'erreur compréhensibles.
+\end{itemize}
+
+\section{NFR-05 -- Maintainability}
+
+Le code doit être modulaire.
+
+Les responsabilités frontend, backend, accès aux données, logique métier et authentification doivent être séparées.
+
+% ============================================================
+\chapter{System Architecture}
+% ============================================================
+
+\section{Recommended Architecture}
+
+L'architecture recommandée est une architecture web moderne en trois couches :
+
+\begin{verbatim}
+User
+  |
+  v
+Frontend Web Application
+  |
+  v
+Backend API
+  |
+  +---- Authentication / Authorization
+  |
+  +---- Business Logic
+  |
+  v
+Database
+  |
+  +---- File/Object Storage for images
+\end{verbatim}
+
+\section{Architectural Principles}
+
+Les principes suivants doivent être appliqués :
+
+\begin{itemize}
+    \item séparation frontend/backend ;
+    \item API centralisée ;
+    \item validation côté serveur ;
+    \item RBAC ;
+    \item logique métier centralisée ;
+    \item persistance transactionnelle des participations et points.
+\end{itemize}
+
+\section{Technology Recommendation}
+
+La stack exacte peut être choisie selon les contraintes du projet. Une combinaison cohérente pourrait être :
+
+\begin{itemize}
+    \item Frontend : React / Next.js ;
+    \item Backend : Node.js avec NestJS ou Express ;
+    \item Database : PostgreSQL ;
+    \item Authentication : sessions sécurisées ou tokens selon l'architecture ;
+    \item Storage : stockage objet sécurisé pour les photos ;
+    \item API : REST.
+\end{itemize}
+
+Le choix final doit rester cohérent et documenté avant l'implémentation.
+
+% ============================================================
+\chapter{Application Structure}
+% ============================================================
+
+\section{Frontend Pages}
+
+\begin{longtable}{p{0.30\textwidth}p{0.60\textwidth}}
+\toprule
+\textbf{Route} & \textbf{Description}\\
+\midrule
+/login & Connexion\\
+/register & Demande d'adhésion\\
+/home & Accueil membre\\
+/events & Bibliothèque des événements\\
+/scoreboard & Classement\\
+/members & Liste publique des membres\\
+/suggestions & Envoi de suggestion\\
+/profile & Profil du membre\\
+/admin & Dashboard Admin\\
+/admin/members & Gestion des membres\\
+/admin/requests & Demandes d'adhésion\\
+/admin/events & Gestion des événements\\
+/admin/messages & Messages\\
+/admin/suggestions & Suggestions reçues\\
+\bottomrule
+\end{longtable}
+
+\section{Suggested Project Structure}
+
+\begin{lstlisting}
+project/
+├── frontend/
+│   ├── app/
+│   ├── components/
+│   ├── layouts/
+│   ├── pages/
+│   ├── services/
+│   ├── hooks/
+│   ├── state/
+│   └── assets/
+│
+├── backend/
+│   ├── controllers/
+│   ├── routes/
+│   ├── services/
+│   ├── models/
+│   ├── repositories/
+│   ├── middleware/
+│   ├── validators/
+│   └── config/
+│
+├── database/
+│   ├── migrations/
+│   └── seeds/
+│
+├── uploads/
+└── documentation/
+    └── documentation.tex
+\end{lstlisting}
+
+% ============================================================
+\chapter{Database Design}
+% ============================================================
+
+\section{Entity Overview}
+
+Les principales entités sont :
+
+\begin{itemize}
+    \item User / Member ;
+    \item Membership Request ;
+    \item Event ;
+    \item Event Participation ;
+    \item Message ;
+    \item Suggestion ;
+    \item Audit Log.
+\end{itemize}
+
+\section{Users / Members}
+
+\begin{longtable}{p{0.28\textwidth}p{0.18\textwidth}p{0.42\textwidth}}
+\toprule
+\textbf{Field} & \textbf{Type} & \textbf{Description}\\
+\midrule
+id & UUID & Identifiant unique\\
+name & string & Nom affiché\\
+email & string & Email unique\\
+password\_hash & string & Mot de passe haché\\
+phone & string & Numéro de téléphone\\
+profile\_photo & string/null & Référence de l'image\\
+description & text/null & Description personnelle\\
+birthday & date/null & Date de naissance\\
+instagram & string/null & URL Instagram\\
+facebook & string/null & URL Facebook\\
+github & string/null & URL GitHub\\
+linkedin & string/null & URL LinkedIn\\
+role & enum & ADMIN ou MEMBER\\
+status & enum & ACTIVE, SUSPENDED, etc.\\
+created\_at & datetime & Création\\
+updated\_at & datetime & Dernière modification\\
+\bottomrule
+\end{longtable}
+
+\section{Membership Requests}
+
+Champs recommandés :
+
+\begin{lstlisting}
+id
+name
+email
+phone
+password_hash
+status
+rejection_reason
+created_at
+reviewed_at
+reviewed_by
+\end{lstlisting}
+
+Statuts :
+
+\begin{lstlisting}
+PENDING
+ACCEPTED
+REJECTED
+\end{lstlisting}
+
+\section{Events}
+
+\begin{lstlisting}
+id
+title
+description
+type
+date
+time
+location
+is_free
+price
+currency
+image_url
+status
+created_at
+updated_at
+\end{lstlisting}
+
+Types :
+
+\begin{lstlisting}
+SMALL
+MEDIUM
+BIG
+MEETING
+\end{lstlisting}
+
+Statuts possibles :
+
+\begin{lstlisting}
+DRAFT
+PUBLISHED
+COMPLETED
+ARCHIVED
+\end{lstlisting}
+
+\section{Event Participations}
+
+\begin{lstlisting}
+id
+event_id
+member_id
+status
+points_awarded
+created_at
+updated_at
+\end{lstlisting}
+
+Une contrainte unique doit empêcher :
+
+\[
+(event\_id, member\_id)
+\]
+
+d'être enregistré plusieurs fois pour une participation active/validée.
+
+\section{Messages}
+
+\begin{lstlisting}
+id
+title
+content
+sender_id
+created_at
+\end{lstlisting}
+
+\section{Suggestions}
+
+\begin{lstlisting}
+id
+member_id
+title
+content
+status
+created_at
+updated_at
+\end{lstlisting}
+
+Statuts possibles :
+
+\begin{lstlisting}
+NEW
+READ
+IN_REVIEW
+RESOLVED
+\end{lstlisting}
+
+\section{Audit Logs}
+
+Pour les actions sensibles :
+
+\begin{lstlisting}
+id
+actor_id
+action
+entity_type
+entity_id
+metadata
+created_at
+\end{lstlisting}
+
+% ============================================================
+\chapter{Database Relationships}
+% ============================================================
+
+\begin{verbatim}
+User 1 -------- N MembershipRequests (historical/audit context)
+
+User 1 -------- N EventParticipations N -------- 1 Event
+
+User 1 -------- N Suggestions
+
+User 1 -------- N Messages (as sender)
+
+User 1 -------- N AuditLogs (as actor)
+\end{verbatim}
+
+\section{Score Calculation}
+
+Le score ne doit pas être une donnée librement modifiable.
+
+Deux stratégies sont possibles :
+
+\begin{enumerate}
+    \item calcul à la demande à partir des participations validées ;
+    \item score matérialisé avec mécanisme transactionnel de recalcul.
+\end{enumerate}
+
+La première stratégie est la plus simple et la plus robuste pour un club de taille modérée.
+
+Si une optimisation est nécessaire, un champ de score peut être ajouté mais doit être recalculable depuis la source de vérité.
+
+% ============================================================
+\chapter{API Design}
+% ============================================================
+
+\section{Authentication API}
+
+\begin{longtable}{p{0.16\textwidth}p{0.38\textwidth}p{0.30\textwidth}}
+\toprule
+\textbf{Method} & \textbf{Endpoint} & \textbf{Permission}\\
+\midrule
+POST & /auth/register & Public\\
+POST & /auth/login & Public\\
+POST & /auth/logout & Authenticated\\
+GET & /auth/me & Authenticated\\
+\bottomrule
+\end{longtable}
+
+\section{Membership API}
+
+\begin{longtable}{p{0.16\textwidth}p{0.46\textwidth}p{0.22\textwidth}}
+\toprule
+\textbf{Method} & \textbf{Endpoint} & \textbf{Role}\\
+\midrule
+GET & /admin/membership-requests & ADMIN\\
+POST & /admin/membership-requests/\{id\}/accept & ADMIN\\
+POST & /admin/membership-requests/\{id\}/reject & ADMIN\\
+\bottomrule
+\end{longtable}
+
+\section{Members API}
+
+\begin{longtable}{p{0.16\textwidth}p{0.46\textwidth}p{0.22\textwidth}}
+\toprule
+\textbf{Method} & \textbf{Endpoint} & \textbf{Role}\\
+\midrule
+GET & /members & MEMBER/ADMIN\\
+GET & /members/\{id\} & Selon visibilité\\
+GET & /admin/members/\{id\} & ADMIN\\
+PUT & /members/me & MEMBER\\
+\bottomrule
+\end{longtable}
+
+\section{Events API}
+
+\begin{longtable}{p{0.16\textwidth}p{0.46\textwidth}p{0.22\textwidth}}
+\toprule
+\textbf{Method} & \textbf{Endpoint} & \textbf{Role}\\
+\midrule
+GET & /events & MEMBER/ADMIN\\
+GET & /events/\{id\} & MEMBER/ADMIN\\
+POST & /admin/events & ADMIN\\
+PUT & /admin/events/\{id\} & ADMIN\\
+DELETE & /admin/events/\{id\} & ADMIN\\
+POST & /events/\{id\}/participation & Selon workflow\\
+DELETE & /events/\{id\}/participation & ADMIN / règles métier\\
+\bottomrule
+\end{longtable}
+
+\section{Scoreboard API}
+
+\begin{lstlisting}
+GET /scoreboard
+\end{lstlisting}
+
+Réponse conceptuelle :
+
+\begin{lstlisting}
+[
+  {
+    "rank": 1,
+    "memberId": "...",
+    "name": "...",
+    "avatarUrl": "...",
+    "score": 120
+  }
+]
+\end{lstlisting}
+
+L'API ne doit pas exposer de données privées inutiles.
+
+\section{Suggestion API}
+
+\begin{lstlisting}
+POST /suggestions
+GET /admin/suggestions
+PATCH /admin/suggestions/{id}
+\end{lstlisting}
+
+\section{Message API}
+
+\begin{lstlisting}
+POST /admin/messages
+GET /messages
+\end{lstlisting}
+
+Un message envoyé à tous les membres doit être distribué logiquement à tous les comptes actifs, sans créer de duplication inutile si l'architecture choisie permet un système d'annonces globales.
+
+% ============================================================
+\chapter{Permissions Matrix}
+% ============================================================
+
+\begin{longtable}{p{0.46\textwidth}cc}
+\toprule
+\textbf{Action} & \textbf{Admin} & \textbf{Member}\\
+\midrule
+Voir événements & Oui & Oui\\
+Créer événement & Oui & Non\\
+Modifier événement & Oui & Non\\
+Retirer événement & Oui & Non\\
+Voir détails complets membre & Oui & Non\\
+Voir membres publics & Oui & Oui\\
+Accepter demande & Oui & Non\\
+Rejeter demande & Oui & Non\\
+Voir suggestions & Oui & Non\\
+Envoyer suggestion & Non requis & Oui\\
+Envoyer message global & Oui & Non\\
+Voir scoreboard & Oui & Oui\\
+Modifier son profil & Oui & Oui\\
+Modifier profil d'un autre membre & Oui selon besoin administratif & Non\\
+Modifier score & Non directement & Non\\
+Gérer participations & Oui & Non\\
+\bottomrule
+\end{longtable}
+
+% ============================================================
+\chapter{Business Rules}
+% ============================================================
+
+\section{Membership Rules}
+
+\begin{enumerate}
+    \item Une demande commence avec le statut PENDING.
+    \item Une demande acceptée produit un compte membre actif.
+    \item Une demande rejetée ne produit pas de membre actif.
+    \item Un email actif ne peut pas être associé à plusieurs comptes actifs.
+    \item Seul un Admin peut accepter ou rejeter une demande.
+\end{enumerate}
+
+\section{Event Rules}
+
+\begin{enumerate}
+    \item Chaque événement possède exactement un type.
+    \item Le type détermine les points.
+    \item Un événement est gratuit ou payant.
+    \item Un événement payant doit avoir un prix valide.
+    \item Un événement gratuit doit avoir un prix nul.
+    \item Un événement archivé reste consultable dans l'historique Admin si nécessaire.
+\end{enumerate}
+
+\section{Points Rules}
+
+\begin{itemize}
+    \item SMALL = 10 points ;
+    \item MEDIUM = 20 points ;
+    \item BIG = 30 points ;
+    \item MEETING = 0 point.
+\end{itemize}
+
+Une participation validée ne doit jamais générer deux fois les mêmes points.
+
+% ============================================================
+\chapter{Authentication and Authorization}
+% ============================================================
+
+\section{Authentication}
+
+Le système doit utiliser un mécanisme sécurisé d'authentification.
+
+Les mots de passe ne doivent jamais être stockés en clair.
+
+Un algorithme moderne de hachage adapté aux mots de passe doit être utilisé, par exemple Argon2id ou bcrypt selon la stack.
+
+\section{Authorization}
+
+Toutes les routes sensibles doivent appliquer un middleware d'autorisation.
+
+Exemple logique :
+
+\begin{lstlisting}
+authenticate()
+    -> identify user
+authorize(ADMIN)
+    -> verify role
+controller
+    -> business logic
+\end{lstlisting}
+
+\section{Admin Protection}
+
+Les routes Admin ne doivent jamais être accessibles simplement parce qu'une page frontend existe.
+
+La vérification doit être faite au backend.
+
+% ============================================================
+\chapter{File Upload Security}
+% ============================================================
+
+Les photos de profil doivent respecter :
+
+\begin{itemize}
+    \item types MIME autorisés ;
+    \item extension contrôlée ;
+    \item taille maximale ;
+    \item nom de fichier généré côté serveur ;
+    \item absence de confiance dans le nom original ;
+    \item transformation/redimensionnement si nécessaire ;
+    \item stockage hors de l'exécution directe du serveur lorsque possible.
+\end{itemize}
+
+Formats recommandés :
+
+\begin{itemize}
+    \item JPEG ;
+    \item PNG ;
+    \item WebP.
+\end{itemize}
+
+La limite exacte de taille doit être configurable.
+
+% ============================================================
+\chapter{UI/UX Design System}
+% ============================================================
+
+\section{Brand Identity}
+
+Le logo ATAST fourni par le propriétaire du projet constitue la référence visuelle principale.
+
+Avant de définir la palette finale, le designer/développeur doit analyser :
+
+\begin{itemize}
+    \item couleurs dominantes ;
+    \item couleurs secondaires ;
+    \item formes ;
+    \item style graphique ;
+    \item niveau de contraste ;
+    \item typographie suggérée.
+\end{itemize}
+
+Les couleurs de l'application doivent être dérivées de cette identité plutôt que choisies arbitrairement.
+
+\section{Visual Language}
+
+L'interface doit être :
+
+\begin{itemize}
+    \item moderne ;
+    \item STEM/technologique ;
+    \item jeune ;
+    \item professionnelle ;
+    \item claire ;
+    \item dynamique sans être surchargée.
+\end{itemize}
+
+\section{Components}
+
+Prévoir :
+
+\begin{itemize}
+    \item Navbar ;
+    \item Sidebar Admin ;
+    \item Menu Member ;
+    \item Event Card ;
+    \item Member Card ;
+    \item Scoreboard Row ;
+    \item Form ;
+    \item Modal ;
+    \item Confirmation Dialog ;
+    \item Toast ;
+    \item Badge ;
+    \item Avatar ;
+    \item Empty State ;
+    \item Loading State.
+\end{itemize}
+
+\section{Event Badges}
+
+Les types d'événements doivent être visuellement identifiables :
+
+\begin{itemize}
+    \item Small Event ;
+    \item Medium Event ;
+    \item Big Event ;
+    \item Meeting.
+\end{itemize}
+
+Les couleurs exactes doivent être compatibles avec le logo ATAST.
+
+% ============================================================
+\chapter{UX Workflows}
+% ============================================================
+
+\section{Membership Workflow}
+
+\begin{verbatim}
+Registration
+     |
+     v
+PENDING
+     |
+     v
+Admin Review
+   /     \
+Accept   Reject
+  |        |
+  v        v
+ACTIVE   REJECTED
+  |
+  v
+Member Home
+\end{verbatim}
+
+\section{Event and Points Workflow}
+
+\begin{verbatim}
+Event Created
+      |
+      v
+Member Participation
+      |
+      v
+Participation Validated
+      |
+      v
+Points Determined by Event Type
+      |
+      v
+Member Score
+      |
+      v
+Scoreboard
+\end{verbatim}
+
+\section{Profile Workflow}
+
+\begin{verbatim}
+Profile
+  |
+  +--> Upload Photo
+  |
+  +--> Social Links
+  |
+  +--> Description
+  |
+  +--> Birthday
+  |
+  +--> Edit Personal Information
+\end{verbatim}
+
+% ============================================================
+\chapter{Validation and Error Handling}
+% ============================================================
+
+\section{Validation}
+
+Toute donnée reçue du client doit être validée côté serveur.
+
+Exemples :
+
+\begin{itemize}
+    \item email valide ;
+    \item mot de passe conforme à la politique ;
+    \item confirmation identique ;
+    \item téléphone valide ;
+    \item prix positif pour un événement payant ;
+    \item prix nul pour un événement gratuit ;
+    \item type d'événement appartenant à l'enum autorisé ;
+    \item URL sociale valide ;
+    \item fichier image autorisé.
+\end{itemize}
+
+\section{Error States}
+
+Le frontend doit prévoir :
+
+\begin{itemize}
+    \item erreurs réseau ;
+    \item erreur de validation ;
+    \item erreur d'autorisation ;
+    \item ressource inexistante ;
+    \item serveur indisponible ;
+    \item session expirée.
+\end{itemize}
+
+Les messages doivent être compréhensibles sans révéler de détails sensibles.
+
+% ============================================================
+\chapter{Edge Cases}
+% ============================================================
+
+\section{Duplicate Participation}
+
+Si un membre possède déjà une participation validée pour un événement, une deuxième participation identique doit être refusée.
+
+\section{Event Type Change}
+
+Si un événement passe de SMALL à BIG, le score associé aux participations validées doit être recalculé selon la règle métier officielle.
+
+\section{Event Removal}
+
+La suppression logique d'un événement doit préserver les données historiques lorsque celles-ci sont nécessaires à l'audit et au calcul des scores.
+
+\section{Member Removal}
+
+Si un membre est supprimé ou désactivé, les participations historiques doivent être traitées selon une politique de conservation définie.
+
+Il est recommandé d'utiliser une désactivation logique afin de préserver l'intégrité historique.
+
+\section{Missing Photo}
+
+Si aucune photo n'existe, utiliser l'avatar par défaut.
+
+\section{Invalid Paid Event}
+
+Un événement marqué comme payant sans prix valide doit être refusé par la validation backend.
+
+\section{Free Event With Price}
+
+Lorsqu'un événement est gratuit, le prix doit être normalisé à zéro ou NULL selon le schéma choisi.
+
+% ============================================================
+\chapter{Admin Dashboard}
+% ============================================================
+
+Le dashboard Admin doit fournir une vue synthétique.
+
+Statistiques recommandées :
+
+\begin{itemize}
+    \item total des membres actifs ;
+    \item demandes en attente ;
+    \item nombre total d'événements ;
+    \item événements à venir ;
+    \item nombre de participations.
+\end{itemize}
+
+Des cartes statistiques doivent permettre un accès rapide aux sections correspondantes.
+
+% ============================================================
+\chapter{Search, Filtering and Pagination}
+% ============================================================
+
+\section{Admin}
+
+Prévoir :
+
+\begin{itemize}
+    \item recherche membre par nom/email ;
+    \item filtrage des demandes par statut ;
+    \item recherche événement ;
+    \item filtrage événement par type/statut.
+\end{itemize}
+
+\section{Member}
+
+Prévoir :
+
+\begin{itemize}
+    \item recherche événement ;
+    \item filtrage par type ;
+    \item éventuellement recherche membre par nom.
+\end{itemize}
+
+Pour les collections importantes, utiliser pagination côté serveur.
+
+% ============================================================
+\chapter{Notifications}
+% ============================================================
+
+Un système de notifications peut être ajouté sans modifier les règles principales.
+
+Notifications recommandées :
+
+\begin{itemize}
+    \item demande acceptée ;
+    \item demande rejetée ;
+    \item nouveau message Admin ;
+    \item événement modifié ;
+    \item confirmation de modification de profil.
+\end{itemize}
+
+Le système doit clairement séparer les notifications des messages globaux si les deux mécanismes sont implémentés.
+
+% ============================================================
+\chapter{Security Threat Model}
+% ============================================================
+
+Les risques principaux comprennent :
+
+\begin{itemize}
+    \item vol de session ;
+    \item accès Admin non autorisé ;
+    \item upload malveillant ;
+    \item XSS ;
+    \item injection SQL ;
+    \item brute force sur login ;
+    \item exposition de données privées ;
+    \item manipulation directe des points ;
+    \item falsification de participations.
+\end{itemize}
+
+Mesures recommandées :
+
+\begin{itemize}
+    \item rate limiting ;
+    \item validation serveur ;
+    \item ORM/requêtes paramétrées ;
+    \item cookies sécurisés si sessions ;
+    \item rotation/expiration appropriée ;
+    \item journalisation des actions sensibles ;
+    \item permissions strictes ;
+    \item transactions pour les opérations critiques.
+\end{itemize}
+
+% ============================================================
+\chapter{Testing Strategy}
+% ============================================================
+
+\section{Unit Tests}
+
+Tester notamment :
+
+\begin{itemize}
+    \item calcul des points ;
+    \item validation d'événement ;
+    \item validation d'inscription ;
+    \item permissions ;
+    \item calcul du scoreboard.
+\end{itemize}
+
+\section{Integration Tests}
+
+Tester :
+
+\begin{itemize}
+    \item inscription $\rightarrow$ demande ;
+    \item acceptation $\rightarrow$ compte membre ;
+    \item rejet $\rightarrow$ statut rejeté ;
+    \item participation $\rightarrow$ points ;
+    \item retrait participation $\rightarrow$ recalcul ;
+    \item message global ;
+    \item suggestion.
+\end{itemize}
+
+\section{End-to-End Tests}
+
+Scénarios critiques :
+
+\begin{enumerate}
+    \item une personne s'inscrit ;
+    \item l'Admin accepte ;
+    \item le membre se connecte ;
+    \item le membre consulte un événement ;
+    \item une participation est validée ;
+    \item le score est mis à jour ;
+    \item le scoreboard est actualisé.
+\end{enumerate}
+
+Tester également le workflow de rejet.
+
+% ============================================================
+\chapter{Deployment}
+% ============================================================
+
+\section{Environment Variables}
+
+Exemple :
+
+\begin{lstlisting}
+DATABASE_URL=
+AUTH_SECRET=
+APP_URL=
+UPLOAD_STORAGE_URL=
+UPLOAD_STORAGE_KEY=
+UPLOAD_STORAGE_SECRET=
+\end{lstlisting}
+
+Aucune valeur réelle ne doit être committée dans le dépôt.
+
+\section{Production Requirements}
+
+La production doit utiliser :
+
+\begin{itemize}
+    \item HTTPS ;
+    \item base de données protégée ;
+    \item secrets dans un gestionnaire sécurisé ;
+    \item sauvegardes ;
+    \item monitoring ;
+    \item logs ;
+    \item stockage d'images sécurisé.
+\end{itemize}
+
+% ============================================================
+\chapter{Logging and Audit}
+% ============================================================
+
+Les actions sensibles de l'administration doivent être journalisées.
+
+Exemples :
+
+\begin{itemize}
+    \item acceptation d'une demande ;
+    \item rejet ;
+    \item création d'événement ;
+    \item modification d'événement ;
+    \item archivage ;
+    \item modification d'une participation ;
+    \item envoi d'un message global.
+\end{itemize}
+
+Un log doit idéalement contenir :
+
+\begin{itemize}
+    \item acteur ;
+    \item action ;
+    \item ressource ;
+    \item identifiant ;
+    \item date ;
+    \item métadonnées pertinentes.
+\end{itemize}
+
+Les logs ne doivent pas contenir de mots de passe ou de secrets.
+
+% ============================================================
+\chapter{Backup and Recovery}
+% ============================================================
+
+Prévoir :
+
+\begin{itemize}
+    \item sauvegardes régulières de la base ;
+    \item sauvegarde du stockage de fichiers ;
+    \item procédure de restauration ;
+    \item vérification périodique des sauvegardes.
+\end{itemize}
+
+Les sauvegardes doivent être protégées contre les accès non autorisés.
+
+% ============================================================
+\chapter{Future Improvements}
+% ============================================================
+
+Les éléments suivants peuvent être considérés ultérieurement :
+
+\begin{itemize}
+    \item notifications push ;
+    \item calendrier avancé ;
+    \item QR code de présence ;
+    \item statistiques avancées ;
+    \item système de badges ;
+    \item inscriptions avancées aux événements ;
+    \item système de présence automatisé.
+\end{itemize}
+
+Ces fonctionnalités sont hors périmètre du MVP et ne doivent pas compliquer la première version.
+
+% ============================================================
+\chapter{Acceptance Criteria}
+% ============================================================
+
+Le système est considéré conforme au périmètre principal lorsque :
+
+\begin{enumerate}
+    \item un visiteur peut envoyer une demande d'adhésion ;
+    \item l'Admin peut accepter ou rejeter la demande ;
+    \item un membre accepté peut se connecter ;
+    \item l'Admin peut consulter les membres ;
+    \item les profils possèdent les champs prévus ;
+    \item un avatar par défaut est affiché en l'absence de photo ;
+    \item l'Admin peut créer, modifier et archiver les événements ;
+    \item les quatre types d'événements sont disponibles ;
+    \item les points 10/20/30/0 sont correctement appliqués ;
+    \item les participations ne sont pas dupliquées ;
+    \item le scoreboard est trié du score le plus élevé au plus faible ;
+    \item l'Admin peut envoyer des messages ;
+    \item les membres peuvent envoyer des suggestions ;
+    \item les membres peuvent modifier leur profil ;
+    \item les données privées ne sont pas exposées aux autres membres ;
+    \item les routes Admin sont protégées côté backend ;
+    \item le site est responsive ;
+    \item les opérations critiques sont validées côté serveur.
+\end{enumerate}
+
+% ============================================================
+\chapter{Implementation Checklist}
+% ============================================================
+
+\begin{longtable}{p{0.70\textwidth}c}
+\toprule
+\textbf{Item} & \textbf{Done}\\
+\midrule
+Authentication & $\square$\\
+Role-based authorization & $\square$\\
+Registration requests & $\square$\\
+Admin membership management & $\square$\\
+Member Library & $\square$\\
+Admin member profiles & $\square$\\
+Event Library & $\square$\\
+Four event types & $\square$\\
+Free/Paid events & $\square$\\
+Event editing & $\square$\\
+Event archiving & $\square$\\
+Participation management & $\square$\\
+Points engine & $\square$\\
+Scoreboard & $\square$\\
+Message Sandbox & $\square$\\
+Suggestion Box & $\square$\\
+Member profile & $\square$\\
+Profile photo upload & $\square$\\
+Default avatar & $\square$\\
+Social links & $\square$\\
+Responsive UI & $\square$\\
+Security validation & $\square$\\
+Database migrations & $\square$\\
+Automated tests & $\square$\\
+Deployment configuration & $\square$\\
+Backup strategy & $\square$\\
+\bottomrule
+\end{longtable}
+
+% ============================================================
+\chapter{Conclusion}
+% ============================================================
+
+Le site ATAST doit être développé comme une plateforme de gestion communautaire moderne, sécurisée et évolutive.
+
+La séparation entre les interfaces Admin et Member est fondamentale. Les permissions doivent être appliquées au niveau du backend, et non uniquement dans l'interface.
+
+Le système d'événements et de points constitue une règle métier centrale :
+
+\[
+\boxed{
+SMALL=10,\quad
+MEDIUM=20,\quad
+BIG=30,\quad
+MEETING=0
+}
+\]
+
+Le score d'un membre doit être dérivé des participations validées et rester cohérent avec l'historique des événements.
+
+Enfin, l'identité visuelle finale doit être construite à partir du logo ATAST fourni au moment de l'implémentation. Le logo doit guider la palette de couleurs, les composants graphiques et l'ambiance générale du site, tout en conservant une interface moderne, lisible, responsive et professionnelle.
+
+\end{document}

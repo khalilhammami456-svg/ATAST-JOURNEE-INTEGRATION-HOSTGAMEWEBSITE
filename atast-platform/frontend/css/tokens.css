@@ -1,0 +1,71 @@
+/* ==========================================================================
+   ATAST design tokens — derived from the club logo
+   Sphere blue #0A71F4, ATAST navy #062247, orbit orange #F06C17
+   ========================================================================== */
+
+@font-face { font-family: "Exo 2"; font-style: italic; font-weight: 600; font-display: swap; src: url("/assets/fonts/exo-2-latin-600-italic.woff2") format("woff2"); }
+@font-face { font-family: "Exo 2"; font-style: italic; font-weight: 700; font-display: swap; src: url("/assets/fonts/exo-2-latin-700-italic.woff2") format("woff2"); }
+@font-face { font-family: "Exo 2"; font-style: italic; font-weight: 800; font-display: swap; src: url("/assets/fonts/exo-2-latin-800-italic.woff2") format("woff2"); }
+@font-face { font-family: "Exo 2"; font-style: normal; font-weight: 600; font-display: swap; src: url("/assets/fonts/exo-2-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Lexend"; font-style: normal; font-weight: 400; font-display: swap; src: url("/assets/fonts/lexend-latin-400-normal.woff2") format("woff2"); }
+/* Lexend 600 file also serves weight 700 so bold text stays calm */
+@font-face { font-family: "Lexend"; font-style: normal; font-weight: 600 700; font-display: swap; src: url("/assets/fonts/lexend-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Exo 2"; font-style: normal; font-weight: 700; font-display: swap; src: url("/assets/fonts/exo-2-latin-700-normal.woff2") format("woff2"); }
+
+:root {
+  /* Brand */
+  --navy: #062247;          /* "ATAST" lettering — ink, dark surfaces */
+  --navy-2: #0E3670;
+  --navy-3: #1B4A8C;
+  --blue: #0B63D6;          /* primary actions (5.4:1 with white text) */
+  --blue-hover: #0952B3;
+  --blue-bright: #0A71F4;   /* sphere / ISIMM — graphics only */
+  --blue-tint: #E7F0FD;
+  --blue-wash: #F2F7FE;
+  --orange: #F06C17;        /* orbits — points, score, energy */
+  --orange-deep: #A34805;   /* orange text on white (5.6:1) */
+  --orange-tint: #FDECDD;
+
+  /* Neutrals (cool, never cream) */
+  --paper: #F4F7FB;
+  --surface: #FFFFFF;
+  --line: #D8E2EF;
+  --line-strong: #B9C8DC;
+  --text: #1B2A41;
+  --muted: #4A5970;         /* 6.9:1 on white */
+  --faint: #5F6E84;
+
+  /* Feedback */
+  --success: #17724A;
+  --success-tint: #E3F4EB;
+  --danger: #B42318;
+  --danger-tint: #FDECEA;
+  --warning: #8A5A00;
+  --warning-tint: #FFF4D6;
+
+  /* Type */
+  --font-display: "Exo 2", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Lexend", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --step--1: 0.8125rem;
+  --step-0: 1rem;
+  --step-1: 1.125rem;
+  --step-2: 1.375rem;
+  --step-3: 1.75rem;
+  --step-4: 2.25rem;
+  --step-5: 3rem;
+
+  /* Space & shape — radius follows hierarchy (controls < cards < panels) */
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px;
+  --r-control: 10px;
+  --r-card: 14px;
+  --r-panel: 20px;
+  --r-pill: 999px;
+
+  --focus: 0 0 0 3px var(--surface), 0 0 0 5px var(--blue);
+  --shadow-float: 0 18px 48px -16px rgba(6, 34, 71, 0.35);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --topbar-h: 64px;
+  --sidebar-w: 272px;
+  --content-max: 1120px;
+}
